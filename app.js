@@ -14,9 +14,9 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src', 'views'));
 
 // Archivos estáticos
-app.use('/css', express.static(path.join(__dirname, 'src', 'css')));
-app.use('/js', express.static(path.join(__dirname, 'src', 'js')));
-app.use('/imgs', express.static(path.join(__dirname, 'src', 'imgs')));
+app.use('/css', express.static(path.join(__dirname, 'src', 'views', 'css')));
+app.use('/js', express.static(path.join(__dirname, 'src', 'views', 'js')));
+app.use('/imgs', express.static(path.join(__dirname, 'src', 'views', 'imgs')));
 
 // Middleware para rutas dinámicas
 app.use(async (req, res, next) => {
@@ -28,7 +28,7 @@ app.use(async (req, res, next) => {
     if (viewName === '') viewName = 'index';
 
     // Construir la ruta completa del archivo EJS
-    const ejsPath = path.join(app.get('views'), `${viewName}.ejs`);
+    const ejsPath = path.join(app.get('views'), `${viewName}.html`);
 
     // Verificar si existe el archivo EJS
     await fs.access(ejsPath, fs.constants.F_OK); // Use fs.constants.F_OK to check for existence

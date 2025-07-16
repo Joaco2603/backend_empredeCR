@@ -9,12 +9,13 @@ const __dirname = path.dirname(__filename);
 const config = {
   projectRoot: path.join(__dirname, '..'), // Directorio raíz del proyecto
   fileExtensions: ['.html', '.ejs'], // Archivos a procesar
-  assetFolders: ['css', 'js', 'imgs'], // Carpetas de assets
+  assetFolders: ['css', 'js', 'imgs', 'assets'], // Todas las carpetas de assets posibles
   fixOptions: {
     normalizePaths: true, // Convertir ./ruta a /ruta
     absolutePaths: false // Usar rutas absolutas desde la raíz (/)
   }
 };
+
 
 async function fixAssetReferences() {
   console.log('Iniciando corrección de rutas CSS/JS...');
@@ -49,7 +50,7 @@ async function processFile(filePath) {
       const fixedPath = fixAssetPath(pathValue, filePath);
       if (fixedPath !== pathValue) {
         modified = true;
-        return `${start}${fixedPath}${end}`;
+        return `${start}${fixedPath.split()}${end}`;
       }
       return match;
     }
@@ -89,23 +90,35 @@ async function processFile(filePath) {
 
 function fixAssetPath(originalPath, filePath) {
   // Ignorar rutas que ya son absolutas o URLs externas
-  if (originalPath.startsWith('http') || originalPath.startsWith('//') || originalPath.startsWith('/')) {
+  if (originalPath.startsWith('http') || originalPath.startsWith('//')) {
     return originalPath;
   }
+
+  // Extraer solo la parte de la ruta que contiene css/js/imgs y lo que sigue
+  const assetRegex = /(css|js|imgs)[\/\\].+$/i;
+  const assetMatch = originalPath.match(assetRegex);
   
+  if (assetMatch) {
+    // Si encontramos un asset, devolver solo esa parte
+    const cleanPath = assetMatch[0].replace(/\\/g, '/');
+    return `/${cleanPath}`;
+  }
+
+  // Si no se encontró un patrón de asset, procesar normalmente
   const fileDir = path.dirname(filePath);
   const absolutePath = path.resolve(fileDir, originalPath);
   const relativeToRoot = path.relative(config.projectRoot, absolutePath);
-  
-  // Normalizar rutas y reemplazar barras invertidas
   let fixedPath = relativeToRoot.replace(/\\/g, '/');
   
-  if (config.fixOptions.normalizePaths) {
-    fixedPath = fixedPath.replace(/^\.?\//, '');
+  // Aplicar el mismo filtro a la ruta resuelta
+  const resolvedAssetMatch = fixedPath.match(assetRegex);
+  if (resolvedAssetMatch) {
+    return `/${resolvedAssetMatch[0].replace(/\\/g, '/')}`;
   }
-  
+
   return `/${fixedPath}`;
 }
+
 
 async function findFilesByExtension(dir, ext) {
   const files = [];
