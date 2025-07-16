@@ -28,8 +28,6 @@ async function autoMigrateToEjs() {
   // 2. Convertir todos los HTML a EJS
   await convertHtmlFiles();
   
-  // 3. Configurar Express automáticamente
-  await setupExpressConfig();
   
   console.log('✅ Migración completada con éxito!');
   console.log('El proyecto ahora funciona exactamente igual pero con EJS');
