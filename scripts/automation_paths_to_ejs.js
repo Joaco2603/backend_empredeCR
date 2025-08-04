@@ -1,7 +1,6 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs/promises';
-import { exec } from 'child_process';
 
 // Configuración automática
 const __filename = fileURLToPath(import.meta.url);
@@ -9,7 +8,6 @@ const __dirname = path.dirname(__filename);
 
 const config = {
   projectRoot: path.join(__dirname, '..'), // Directorio raíz del proyecto
-  backupDir: path.join(__dirname, '../backup_original'), // Backup de seguridad
   ejsOptions: {
     keepOriginalStructure: true,  // Mantener misma estructura de archivos
     fixInternalLinks: true,       // Corregir enlaces entre páginas
@@ -22,9 +20,6 @@ const config = {
 async function autoMigrateToEjs() {
   console.log('Iniciando migración automática a EJS...');
   
-  // 1. Crear backup de seguridad
-  await createBackup();
-  
   // 2. Convertir todos los HTML a EJS
   await convertHtmlFiles();
   
@@ -34,17 +29,6 @@ async function autoMigrateToEjs() {
 }
 
 // ================= Funciones principales =================
-
-async function createBackup() {
-  try {
-    console.log('Creando backup de seguridad...');
-    await fs.mkdir(config.backupDir, { recursive: true });
-    await exec(`cp -r ${config.projectRoot}/* ${config.backupDir}/`);
-    console.log('✓ Backup creado en:', config.backupDir);
-  } catch (error) {
-    console.warn('⚠ No se pudo crear backup completo:', error.message);
-  }
-}
 
 async function convertHtmlFiles() {
   console.log('Buscando y convirtiendo archivos HTML...');
