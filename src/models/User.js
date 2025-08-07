@@ -1,15 +1,8 @@
-const mongoose = require('mongoose');
+const { Schema,model } = require('mongoose');
 
-const DB_URI = 'mongodb://localhost:27017/LoginTienda';
-
-mongoose.connect(DB_URI, {})
-
-    .then(console.log("DB conect"))
-    .catch(err => console.log(err))
 
 //Schema
-
-let UserSchema = new mongoose.Schema({
+let UserSchema = new Schema({
     name: {
         type: String,
         require: [true, 'Name must be provided']
@@ -44,4 +37,4 @@ UserSchema.methods.toJSON = ()=>{
     return usuario
 }
 
-module.exports = mongoose.model('Users', UserSchema);
+module.exports = model('Users', UserSchema);

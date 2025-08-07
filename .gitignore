@@ -1,4 +1,4 @@
-
+.cursor_rules
 node_modules
 package-lock.json
 .env
