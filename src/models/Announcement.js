@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose')
+import { Schema, model } from 'mongoose';
 
 
 const AnnoucementSchema = Schema({
@@ -32,4 +32,4 @@ const AnnoucementSchema = Schema({
     },
 })
 
-module.exports = model('Annoucements', AnnoucementSchema);
+export default model('Annoucements', AnnoucementSchema);

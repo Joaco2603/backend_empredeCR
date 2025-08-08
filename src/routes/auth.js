@@ -1,5 +1,5 @@
 import { Router } from "express";
-import User from "../models/User";
+import User from "../models/User.js";
 
 
 const router = Router();
@@ -71,3 +71,5 @@ router.get('/dashboard', (req, res) => {
   // req.user está disponible gracias al authMiddleware
   res.render('dashboard', { user: req.user });
 });
+
+export default router;

@@ -1,4 +1,4 @@
-const { Schema,model } = require('mongoose')
+import { Schema,model } from 'mongoose';
 
 
 //Schema
@@ -30,5 +30,4 @@ let TransportSchema = new Schema({
 }, { versionKey: false });
 
 //Model
-
-module.exports = model('Transports', TransportSchema);
+export default model('Transports', TransportSchema);

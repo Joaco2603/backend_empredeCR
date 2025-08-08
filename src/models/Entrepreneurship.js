@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose')
+import { Schema, model } from 'mongoose';
 
 
 const EntrepreneurshipSchema = Schema({
@@ -28,4 +28,4 @@ const EntrepreneurshipSchema = Schema({
     },
 })
 
-module.exports = model('Entrepreneurships', EntrepreneurshipSchema);
+export default model('Entrepreneurships', EntrepreneurshipSchema);
