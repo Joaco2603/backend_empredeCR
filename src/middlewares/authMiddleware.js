@@ -6,7 +6,7 @@
 export const authMiddleware = (options = {}) => {
   const config = {
     redirectTo: '/login',
-    publicRoutes: ['/', '/login', '/register', '/auth', '/public', '/api-docs'],
+    publicRoutes: ['/', '/login', '/signup', '/auth', '/public', '/api-docs'],
     debug: process.env.NODE_ENV !== 'production',
     ...options
   };
