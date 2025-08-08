@@ -23,6 +23,9 @@ SESSION_SECRET=your-secret-here
 
 # Entorno
 NODE_ENV=development
+
+# Mongo db uri
+MONGO_URI=mongodb://localhost:27017/EmprendeSanJose
 ```
 4) Asegúrate de tener MongoDB levantado en tu máquina (o ajusta la conexión en `src/db.js`).
 

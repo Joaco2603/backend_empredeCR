@@ -5,7 +5,11 @@ let UserSchema = new Schema(
   {
     name: {
       type: String,
-      require: [true, "Name must be provided"],
+      required: [true, "Name must be provided"],
+    },
+    last_name: {
+      type: String,
+      required: [true, "Last name must be provided"],
     },
     email: {
       type: String,
@@ -16,17 +20,17 @@ let UserSchema = new Schema(
       type: String,
       required: [true, "Password must be provided"],
     },
-    img: {
-      type: String,
-    },
     rol: {
       type: String,
       required: true,
-      emun: ["ADMIN_ROLE", "CITIZEN_ROLE", "ENTREPRENEUR_ROLE"],
+      enum: ["ADMIN_ROLE", "CITIZEN_ROLE", "ENTREPRENEUR_ROLE"],
     },
     isActive: {
       type: Boolean,
       default: true,
+    },
+    birthdate: {
+      type: Date,
     },
   },
   { versionKey: false },

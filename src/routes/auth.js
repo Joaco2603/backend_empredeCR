@@ -1,22 +1,32 @@
 import { Router } from "express";
+import bcrypt from "bcrypt";
 import User from "../models/User.js";
 
 const router = Router();
 
-
 // En tu archivo de rutas
 router.post('/login', async (req, res) => {
   try {
-    // 1. Valite credentials
+    // 1. Validate credentials
     const { email, password, ...extraData } = req.body;
 
-    // 2. Login function
-    user = User.findOne({
-      email,
-      password
-    });
+    // 2. Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() });
 
-    if (!user) throw new Error('User not found or password incorrect', 404);
+    if (!user) {
+      return res.status(404).json({
+        error: 'Invalid credentials email or password incorrect',
+      });
+    }
+
+    // 3. Compare password with hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(404).json({
+        error: 'Invalid credentials email or password incorrect',
+      });
+    }
 
     // 2. Establecer sesión
     req.session.user = {
@@ -28,15 +38,14 @@ router.post('/login', async (req, res) => {
 
 
     // 3. Redirigir (opcional: guardar URL previa)
-    const redirectTo = '/dashboard';
+    const redirectTo = req.session.returnTo || '/dashboard';
     delete req.session.returnTo;
 
     res.render(redirectTo);
   } catch (error) {
     if (error.status === 404) {
       res.status(404).json({
-        error: 'Invalid credentials',
-        email: req.body.email
+        error: 'Invalid credentials email or password incorrect',
       });
       return;
     }
@@ -50,14 +59,29 @@ router.post('/login', async (req, res) => {
 
 router.post('/signup', async (req, res) => {
   try {
-    // 1. Validar credenciales
-    const user = await User.signup(req.body.email, req.body.password);
+    const { email, password, rol, name, last_name, birthdate } = req.body;
+
+    // 1. Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // 2. Create user with hashed password
+    const user = await User.create({
+      name: name.toLowerCase(),
+      last_name: last_name.toLowerCase(),
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      rol: rol,
+      birthdate,
+    });
+
+    console.log(user);
 
     // 2. Establecer sesión
     req.session.user = {
       id: user.id,
       email: user.email,
-      role: user.role,
+      rol: user.rol,
       name: user.name
     };
 
@@ -66,11 +90,14 @@ router.post('/signup', async (req, res) => {
     delete req.session.returnTo;
 
     res.redirect(redirectTo);
+    res.json(user);
   } catch (error) {
-    res.render('login', {
-      error: 'Credenciales inválidas',
-      email: req.body.email
+    console.log(error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Contact admin to fix it'
     });
+    return;
   }
 });
 
