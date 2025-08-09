@@ -1,4 +1,3 @@
-import { signToken } from "../utils/jwt.js";
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
@@ -37,20 +36,9 @@ router.post('/login', async (req, res) => {
       name: user.name
     };
 
-    // 3. Emitir JWT
-    const token = signToken({ id: user.id, email: user.email, rol: user.rol, name: user.name });
-
-    // Soporte a clientes API y navegadores
-    if (req.accepts('json') && !req.accepts('html')) {
-      res.json({ token, user: { id: user.id, email: user.email, rol: user.rol, name: user.name } });
-      return;
-    }
-
     // 4. Redirect 
     const redirectTo = req.session.returnTo || 'dashboard';
     delete req.session.returnTo;
-    res.cookie('token', token, { httpOnly: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
-    console.log(redirectTo)
     res.redirect(redirectTo);
     return;
   } catch (error) {
@@ -65,7 +53,8 @@ router.post('/login', async (req, res) => {
 
 router.post('/signup', async (req, res) => {
   try {
-    const { email, password, rol, name, last_name, birthdate } = req.body;
+    const { email, password, rol, name, last_name } = req.body;
+    console.log(req.body)
 
     // 1. Hash the password
     const saltRounds = 10;
@@ -73,37 +62,31 @@ router.post('/signup', async (req, res) => {
 
     // 2. Create user with hashed password
     const user = await User.create({
-      name: name.toLowerCase(),
-      last_name: last_name.toLowerCase(),
-      email: email.toLowerCase(),
+      name,
+      last_name,
+      email,
       password: hashedPassword,
-      rol: rol,
-      birthdate,
+      rol: rol || "CITIZEN_ROLE",
+      birthdate: "2025-08-08T13:04:14.000Z" || new Date()
     });
+
 
     // 2. Establecer sesión
     req.session.user = {
       id: user.id,
       email: user.email,
-      rol: user.rol,
-      name: user.name
+      rol: user.rol || "CITIZEN_ROLE",
+      name: user.name,
     };
 
-    // 3. Emitir JWT
-    const token = signToken({ id: user.id, email: user.email, rol: user.rol, name: user.name });
-
-    if (req.accepts('json') && !req.accepts('html')) {
-      return res.status(201).json({ token, user: { id: user.id, email: user.email, rol: user.rol, name: user.name } });
-    }
-
-    // 4. Redirigir (opcional: guardar URL previa)
-    const redirectTo = 'signUp' || 'dashboard';
+    // 4. Redirect
+    const redirectTo = req.session.returnTo || 'dashboard';
     delete req.session.returnTo;
-    res.cookie('token', token, { httpOnly: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
-    res.render(redirectTo, { user: req.user });
+    res.redirect(redirectTo);
     return;
   } catch (error) {
-    res.status(500).json({
+    console.log(error);
+    res.status(500).render({
       error: 'Internal server error',
       message: 'Contact admin to fix it'
     });
@@ -115,7 +98,7 @@ router.post('/signup', async (req, res) => {
 // Ejemplo de ruta protegida
 router.get('dashboard', (req, res) => {
   // req.user está disponible gracias al authMiddleware
-  res.render('dashboard', { user: req.user });
+  res.render('dashboard');
 });
 
 export default router;

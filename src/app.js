@@ -3,7 +3,6 @@ import { authMiddleware } from "./middlewares/authMiddleware.js";
 import { dynamicViewsMiddleware } from "./middlewares/dynamicViews.js";
 import { connectDB } from "./db.js";
 import { config } from "./config/env.js";
-import cookieParser from "cookie-parser";
 
 // Import routes
 import {
@@ -14,6 +13,7 @@ import {
   announcementRoutes,
   reportRoutes,
 } from "./routes/index.js";
+import { initSession } from "./config/session.js";
 
 // Initial configuration
 const app = configureServer();
@@ -21,8 +21,10 @@ const port = config.PORT;
 
 // Middleware
 app.use(authMiddleware());
-app.use(cookieParser());
 app.use(dynamicViewsMiddleware(app.get("views")));
+
+// Init session
+initSession(app);
 
 // Connect to DB
 connectDB();

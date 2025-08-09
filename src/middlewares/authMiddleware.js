@@ -3,8 +3,6 @@
 * @param {Object} options - Configuration options
 * @returns {Function} Express middleware
  */
-import { getTokenFromRequest, verifyToken } from '../utils/jwt.js';
-
 export const authMiddleware = (options = {}) => {
   const config = {
     redirectTo: '/login',
@@ -14,58 +12,53 @@ export const authMiddleware = (options = {}) => {
   };
 
   return (req, res, next) => {
-    // Skip para métodos OPTIONS y HEAD
+    // 1. Skip para métodos OPTIONS y HEAD
     if (['OPTIONS', 'HEAD'].includes(req.method)) {
       return next();
     }
 
-    // Verificar rutas públicas
+    // 2. Verificar rutas públicas
     const isPublic = config.publicRoutes.some(route => {
-      return req.path === route || req.path.startsWith(route + '/');
+      const routeMatches = req.path === route || req.path.startsWith(route + '/');
+      // Opcional: manejo de rutas públicas con parámetros
+      if (!routeMatches && route.includes(':')) {
+        const routeParts = route.split('/');
+        const pathParts = req.path.split('/');
+        if (routeParts.length === pathParts.length) {
+          return routeParts.every((part, i) => 
+            part.startsWith(':') || part === pathParts[i]
+          );
+        }
+      }
+      return routeMatches;
     });
 
     if (isPublic) {
       return next();
     }
 
-    // 1) Si hay sesión, úsala
-    if (req.session && req.session.user) {
+    // 3. Verificar sesión de usuario
+    if (req.session?.user) {
+      // Asignar usuario al request y locals para EJS
       req.user = req.session.user;
       res.locals.user = req.user;
       return next();
     }
 
-    // 2) Intentar autenticar por JWT
-    const token = getTokenFromRequest(req);
-    if (token) {
-      try {
-        const payload = verifyToken(token);
-        req.user = payload;
-        res.locals.user = req.user;
-        return next();
-      } catch (e) {
-        if (config.debug) {
-          console.warn(`[Auth] JWT inválido para ${req.path}:`, e.message);
-        }
-        // Si es API o petición no-GET, devolver 401 JSON; si es vista GET, redirigir
-        if (req.method !== 'GET' || req.path.startsWith('/api') || req.accepts('json')) {
-          return res.status(401).json({ error: 'Unauthorized', message: 'Token inválido o expirado' });
-        }
-        req.session.returnTo = req.originalUrl;
-        return res.redirect(config.redirectTo);
-      }
-    }
-
-    // 3) Sin sesión ni token
+    // 4. Manejo de acceso no autorizado
     if (config.debug) {
       console.log(`[Auth] Intento de acceso no autorizado a ${req.path}`);
     }
+
+    // Diferentes respuestas según el tipo de petición
     if (req.method !== 'GET' || req.path.startsWith('/api') || req.accepts('json')) {
       return res.status(401).json({
         error: 'Unauthorized',
-        message: 'Must be login before use the api key'
+        message: 'You must log in to use this app.'
       });
     }
+
+    // Guardar URL original para redirección post-login
     req.session.returnTo = req.originalUrl;
     return res.redirect(config.redirectTo);
   };

@@ -11,7 +11,7 @@ export const dynamicViewsMiddleware = (viewsPath) => {
     try {
       let viewName = req.path.slice(1) || 'index';
       const ejsPath = path.join(viewsPath, `${viewName}.ejs`);
-      
+
       await fs.access(ejsPath);
       res.render(viewName);
     } catch (error) {
