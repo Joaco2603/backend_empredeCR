@@ -1,6 +1,6 @@
 // Routes barrel file - Centralizes all route imports and exports
 import authRoutes from './auth.js';
-import rolRoutes from './rol.js';
+import userRoutes from './user.js';
 import transportRoutes from './transport.js';
 import entrepreneurshipRoutes from './entrepreneurship.js';
 import announcementRoutes from './announcement.js';
@@ -9,7 +9,7 @@ import reportRoutes from './report.js';
 // Export all routes
 export {
   authRoutes,
-  rolRoutes,
+  userRoutes,
   transportRoutes,
   entrepreneurshipRoutes,
   announcementRoutes,
@@ -19,7 +19,7 @@ export {
 // Export default object with all routes
 export default {
   authRoutes,
-  rolRoutes,
+  userRoutes,
   transportRoutes,
   entrepreneurshipRoutes,
   announcementRoutes,

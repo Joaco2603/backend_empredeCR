@@ -1,3 +1,4 @@
+import { signToken } from "../utils/jwt.js";
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
@@ -32,27 +33,32 @@ router.post('/login', async (req, res) => {
     req.session.user = {
       id: user.id,
       email: user.email,
-      role: user.role,
+      rol: user.rol,
       name: user.name
     };
 
+    // 3. Emitir JWT
+    const token = signToken({ id: user.id, email: user.email, rol: user.rol, name: user.name });
 
-    // 3. Redirigir (opcional: guardar URL previa)
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-
-    res.render(redirectTo);
-  } catch (error) {
-    if (error.status === 404) {
-      res.status(404).json({
-        error: 'Invalid credentials email or password incorrect',
-      });
+    // Soporte a clientes API y navegadores
+    if (req.accepts('json') && !req.accepts('html')) {
+      res.json({ token, user: { id: user.id, email: user.email, rol: user.rol, name: user.name } });
       return;
     }
+
+    // 4. Redirect 
+    const redirectTo = req.session.returnTo || 'dashboard';
+    delete req.session.returnTo;
+    res.cookie('token', token, { httpOnly: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
+    console.log(redirectTo)
+    res.redirect(redirectTo);
+    return;
+  } catch (error) {
     res.status(500).json({
       error: 'Internal server error',
-      message: "Contact admin to fix it"
-    })
+      message: 'Contact admin to fix it'
+    });
+    return;
   }
 });
 
@@ -75,8 +81,6 @@ router.post('/signup', async (req, res) => {
       birthdate,
     });
 
-    console.log(user);
-
     // 2. Establecer sesión
     req.session.user = {
       id: user.id,
@@ -85,14 +89,20 @@ router.post('/signup', async (req, res) => {
       name: user.name
     };
 
-    // 3. Redirigir (opcional: guardar URL previa)
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
+    // 3. Emitir JWT
+    const token = signToken({ id: user.id, email: user.email, rol: user.rol, name: user.name });
 
-    res.redirect(redirectTo);
-    res.json(user);
+    if (req.accepts('json') && !req.accepts('html')) {
+      return res.status(201).json({ token, user: { id: user.id, email: user.email, rol: user.rol, name: user.name } });
+    }
+
+    // 4. Redirigir (opcional: guardar URL previa)
+    const redirectTo = 'signUp' || 'dashboard';
+    delete req.session.returnTo;
+    res.cookie('token', token, { httpOnly: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' });
+    res.render(redirectTo, { user: req.user });
+    return;
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Contact admin to fix it'
@@ -103,7 +113,7 @@ router.post('/signup', async (req, res) => {
 
 
 // Ejemplo de ruta protegida
-router.get('/dashboard', (req, res) => {
+router.get('dashboard', (req, res) => {
   // req.user está disponible gracias al authMiddleware
   res.render('dashboard', { user: req.user });
 });

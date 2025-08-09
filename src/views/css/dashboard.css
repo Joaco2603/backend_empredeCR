@@ -1,0 +1,50 @@
+ .container {
+     max-width: 960px;
+     margin: 32px auto;
+     padding: 0 16px;
+ }
+
+ .role {
+     display: inline-block;
+     padding: 4px 8px;
+     border-radius: 6px;
+     font-size: 12px;
+     background: #eef2ff;
+     color: #1f3a8a;
+ }
+
+ .grid {
+     display: grid;
+     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+     gap: 16px;
+     margin-top: 24px;
+ }
+
+ .card {
+     border: 1px solid #e5e7eb;
+     border-radius: 8px;
+     padding: 16px;
+     background: #fff;
+ }
+
+ h1 {
+     margin: 0 0 8px;
+ }
+
+ p {
+     margin: 4px 0;
+ }
+
+ a.button {
+     display: inline-block;
+     margin-top: 8px;
+     padding: 8px 12px;
+     border-radius: 6px;
+     background: #0969da;
+     color: white;
+     text-decoration: none;
+ }
+
+ a.button:hover {
+     background: #0759b6;
+ }

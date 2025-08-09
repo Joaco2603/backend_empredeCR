@@ -1,7 +1,8 @@
 import session from 'express-session';
+import { config } from './env.js';
 
 export const sessionConfig = {
-  secret: process.env.SESSION_SECRET || 'secret-key-dev',
+  secret: config.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {

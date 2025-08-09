@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/css/index.css" />
+  <link rel="stylesheet" href="/css/cards.css" />
+  <link rel="stylesheet" href="/css/dashboard">
+</head>
+<body>
+  <div class="container">
+    <h1>Hola <%= (user && user.name) ? user.name : 'Usuario' %></h1>
+    <p>Tu rol es: <span class="role"><%= (user && user.rol) ? user.rol : 'SIN_ROL' %></span></p>
+
+    <% if (user && user.rol === 'ADMIN_ROLE') { %>
+      <section>
+        <h2>Panel de administración</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Usuarios</h3>
+            <p>Gestiona usuarios del sistema.</p>
+            <a class="button" href="/users">Ver usuarios</a>
+          </div>
+          <div class="card">
+            <h3>Emprendimientos</h3>
+            <p>Aprueba y administra emprendimientos.</p>
+            <a class="button" href="/entrepreneurAdmin">Administrar</a>
+          </div>
+          <div class="card">
+            <h3>Anuncios y eventos</h3>
+            <p>Publica y revisa anuncios y eventos.</p>
+            <a class="button" href="/advertisement">Ir a anuncios</a>
+          </div>
+        </div>
+      </section>
+    <% } else if (user && user.rol === 'ENTREPRENEUR_ROLE') { %>
+      <section>
+        <h2>Panel de emprendedor</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Mi emprendimiento</h3>
+            <p>Crea o edita la información de tu emprendimiento.</p>
+            <a class="button" href="/entrepreneur">Gestionar</a>
+          </div>
+          <div class="card">
+            <h3>Anuncios</h3>
+            <p>Publica un nuevo anuncio.</p>
+            <a class="button" href="/advertisementForm">Crear anuncio</a>
+          </div>
+        </div>
+      </section>
+    <% } else if (user && user.rol === 'CITIZEN_ROLE') { %>
+      <section>
+        <h2>Panel de ciudadano</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Eventos</h3>
+            <p>Explora eventos de tu comunidad.</p>
+            <a class="button" href="/event">Ver eventos</a>
+          </div>
+          <div class="card">
+            <h3>Transporte</h3>
+            <p>Consulta información de transporte.</p>
+            <a class="button" href="/transport">Ver transporte</a>
+          </div>
+          <div class="card">
+            <h3>Denuncias</h3>
+            <p>Envía una denuncia ciudadana.</p>
+            <a class="button" href="/complaintForm">Crear denuncia</a>
+          </div>
+        </div>
+      </section>
+    <% } else { %>
+      <section>
+        <p>No se pudo determinar tu rol. Intenta cerrar sesión e iniciar nuevamente.</p>
+      </section>
+    <% } %>
+  </div>
+</body>
+</html>
+

@@ -38,9 +38,9 @@ let UserSchema = new Schema(
 
 //Model
 
-UserSchema.methods.toJSON = () => {
-  const { __v, password, ...usuario } = this.toObject();
-  return usuario;
+UserSchema.methods.toJSON = function toJSON() {
+  const { password, ...userWithoutPassword } = this.toObject();
+  return userWithoutPassword;
 };
 
 export default model("Users", UserSchema);

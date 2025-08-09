@@ -1,18 +1,14 @@
 import { configureServer, startServer } from "./config/server.js";
-
 import { authMiddleware } from "./middlewares/authMiddleware.js";
-
 import { dynamicViewsMiddleware } from "./middlewares/dynamicViews.js";
-
 import { connectDB } from "./db.js";
-
-import { configDotenv } from "dotenv";
-configDotenv();
+import { config } from "./config/env.js";
+import cookieParser from "cookie-parser";
 
 // Import routes
 import {
   authRoutes,
-  rolRoutes,
+  userRoutes,
   transportRoutes,
   entrepreneurshipRoutes,
   announcementRoutes,
@@ -21,18 +17,19 @@ import {
 
 // Initial configuration
 const app = configureServer();
-const port = process.env.PORT || 3000;
+const port = config.PORT;
 
 // Middleware
 app.use(authMiddleware());
+app.use(cookieParser());
 app.use(dynamicViewsMiddleware(app.get("views")));
 
 // Connect to DB
 connectDB();
 
 // Routes
-app.use("/auth", authRoutes);
-app.use("/rol", rolRoutes);
+app.use("/", authRoutes);
+app.use("/user", userRoutes);
 app.use("/transport", transportRoutes);
 app.use("/entrepreneurship", entrepreneurshipRoutes);
 app.use("/announcement", announcementRoutes);
