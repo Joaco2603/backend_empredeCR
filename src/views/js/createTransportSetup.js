@@ -2,7 +2,7 @@ import {renderRoleBasedContent} from './creationSetup.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   renderRoleBasedContent({
-    roleRequired: 'admin',
+    roleRequired: 'ADMIN_ROLE',
     containerClass: 'creation_div',
     html: ``,
     buttonText: 'Crear transporte',

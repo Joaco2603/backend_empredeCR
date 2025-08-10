@@ -38,7 +38,7 @@ function setupUserNav() {
   // Añadir funcionalidad de logout SOLO si el usuario está logueado y no es 'admin'
   // Nota: Si 'userData' es solo el string 'admin', 'user', etc., no tiene una propiedad 'role'.
   // Si esperas un objeto, deberías hacer JSON.parse(localStorage.getItem('rol'))
-  if (userData && userData !== 'admin') { // Asumiendo que userData es el string 'admin' o 'user'
+  if (userData && userData !== 'ADMIN_ROLE') { // Asumiendo que userData es el string 'admin' o 'user'
     userLink.addEventListener('click', (e) => {
       e.preventDefault(); // Previene la navegación por defecto del enlace
       if (confirm('¿Cerrar sesión?')) {
@@ -46,9 +46,9 @@ function setupUserNav() {
         location.reload(); // Recarga la página para aplicar los cambios de sesión
       }
     });
-  } else if (userData === 'admin') {
+  } else if (userData === 'ADMIN_ROLE') {
       // Si es admin, puedes querer redirigir a un panel de administración
-      userLink.href = './users.html'; // Ejemplo: un enlace para administradores
+      userLink.href = './users'; // Ejemplo: un enlace para administradores
       userLink.textContent = `Usuarios`;
   }
 }

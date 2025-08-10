@@ -2,8 +2,8 @@
 :root {
   --color-background: #f3f3f3;
   --color-card: #fff;
-      --color-primary: #075056;
-    --color-secondary: #16232A;
+  --color-primary: #075056;
+  --color-secondary: #16232A;
   --color-text-dark: #333;
 
   --spacing-small: 8px;
@@ -20,7 +20,7 @@
   gap: var(--spacing-large);
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 10rem;
+  margin-bottom: 5rem;
 }
 
 /* Tarjeta de perfil y formulario */
@@ -30,7 +30,7 @@
   padding: var(--spacing-medium);
   border-radius: 12px;
   width: 300px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -39,6 +39,15 @@
   position: relative;
   justify-content: center;
   margin-top: 7rem;
+}
+
+.container_logOut {
+  display: flex;
+  justify-content: center;
+}
+
+.logOut_div {
+  width: 50%;
 }
 
 /*Imagen de perfil */
@@ -85,7 +94,8 @@
   }
 
   .card_user_profile {
-    display: none; /* Oculta la tarjeta de perfil */
+    display: none;
+    /* Oculta la tarjeta de perfil */
   }
 
   .form_user_profile {

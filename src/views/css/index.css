@@ -235,77 +235,33 @@ nav {
 }
 
 /* Buttons */
-
 .button {
-  position: relative;
-  padding: 15px 22px;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(7, 80, 86, 0.3);
   border: none;
-  color: #fff;
   cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  min-width: 100px;
-  font-size: 1em;
-}
-
-.button_color_primary {
-  background-color: var(--color-primary);
-}
-
-.button_color_secondary {
-  background-color: var(--color-secondary);
-}
-
-.button:active {
-  transform: scale(0.96);
 }
 
 .button:hover {
-  opacity: 0.8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(7, 80, 86, 0.4);
+  background: var(--color-secondary);
 }
 
-.button:before,
-.button:after {
-  position: absolute;
-  content: "";
-  width: 150%;
-  left: 50%;
-  height: 100%;
-  transform: translateX(-50%);
-  z-index: -1000;
-  background-repeat: no-repeat;
-}
-
-.button:hover:before {
-  top: -70%;
-  background-image: radial-gradient(
-      circle,
-      var(--color-primary) 20%,
-      transparent 20%
-    ),
-    radial-gradient(
-      circle,
-      transparent 20%,
-      var(--color-primary) 20%,
-      transparent 30%
-    ),
-    radial-gradient(circle, var(--color-primary) 20%, transparent 20%),
-    radial-gradient(circle, var(--color-primary) 20%, transparent 20%),
-    radial-gradient(
-      circle,
-      transparent 10%,
-      var(--color-primary) 15%,
-      transparent 20%
-    ),
-    radial-gradient(circle, var(--color-primary) 20%, transparent 20%),
-    radial-gradient(circle, var(--color-primary) 20%, transparent 20%),
-    radial-gradient(circle, var(--color-primary) 20%, transparent 20%),
-    radial-gradient(circle, var(--color-primary) 20%, transparent 20%);
-  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
-    10% 10%, 18% 18%;
-  background-position: 50% 120%;
-  animation: greentopBubbles 0.6s ease;
+.button:active {
+  transform: translateY(0);
 }
 
 @keyframes greentopBubbles {
