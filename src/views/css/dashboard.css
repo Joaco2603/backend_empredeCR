@@ -14,19 +14,6 @@
   --font-size-base: 16px;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: var(--font-family-body);
-  background: white;
-  min-height: 100vh;
-  color: black;
-}
-
 .background-pattern {
   position: fixed;
   top: 0;
@@ -40,7 +27,7 @@ body {
   z-index: -1;
 }
 
-.container {
+.container_header {
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -296,7 +283,7 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .container {
+  .container_header {
     padding: 20px 15px;
   }
 

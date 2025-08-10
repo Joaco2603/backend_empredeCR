@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
       containerClass: 'creation_div',
       html: '',
       buttonText: 'Ver nuevas quejas',
-      buttonHref: 'complaintAdmin.html',
+      buttonHref: 'complaintAdmin',
     });
   } else {
     // Muestra el botón normal (ciudadano/emprendedor)

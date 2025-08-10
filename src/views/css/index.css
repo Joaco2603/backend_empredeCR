@@ -37,14 +37,64 @@ body {
   height: 100vh;
 }
 
+/* Animaciones */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+    z-index: 100;
+  }
+}
+
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Titles and subtitles */
 
 .title_big {
   font-size: 5rem;
+  animation: slideUp 0.8s ease-out both;
 }
 
 .title_medium {
   font-size: 4rem;
+  animation: slideUp 0.8s ease-out both;
 }
 
 .subtitle {
@@ -74,6 +124,11 @@ nav {
   background: #fff;
   padding: 1rem 2rem;
   color: black;
+  animation: fadeIn 0.8s ease-out both;
+}
+
+.navbar_index > nav{
+  animation: none;
 }
 
 .nav-container {
@@ -252,6 +307,7 @@ nav {
   box-shadow: 0 4px 12px rgba(7, 80, 86, 0.3);
   border: none;
   cursor: pointer;
+  z-index: 1000;
 }
 
 .button:hover {
@@ -396,9 +452,9 @@ nav {
 
 .setup_creation_container {
   display: flex; /* Make it a flex container */
-  justify-content: space-between; /* Pushes the first item (h1) to the left and the second item (creation_div) to the right */
+  justify-content: space-around; /* Pushes the first item (h1) to the left and the second item (creation_div) to the right */
   align-items: center; /* Vertically centers the items if they have different heights */
-  width: 95%; /* Ensure it spans the full width to allow space-between to work */
+  width: 100%; /* Ensure it spans the full width to allow space-between to work */
   box-sizing: border-box; /* Include padding in the width calculation */
 }
 

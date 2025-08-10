@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
       containerClass: 'creation_div',
       html: '',
       buttonText: 'Ver nuevos emprendimientos',
-      buttonHref: 'entrepreneurAdmin.html',
+      buttonHref: 'entrepreneurAdmin',
     });
   } else {
     // Muestra el botón normal (ciudadano/emprendedor)
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     containerClass: 'creation_div',
     html: ``,
     buttonText: 'Crear evento',
-    buttonHref: 'entrepreneurForm.html',
+    buttonHref: 'entrepreneurForm',
   });
   }
 });
