@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, version } from 'mongoose';
 
 
 const ReportSchema = Schema({
@@ -30,6 +30,6 @@ const ReportSchema = Schema({
         type: Date,
         default: Date.now
     }
-})
+},{versionKey: false});
 
 export default model('Reports', ReportSchema);

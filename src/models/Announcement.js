@@ -21,15 +21,10 @@ const AnnoucementSchema = Schema({
         type: Boolean,
         default: true
     },
-    organizer: {
-        type: Schema.Types.ObjectId,
-        ref: 'Users',
-        required: [true, 'User must be provided']
-    },
     type: {
         type: String,
         required: [true, 'Type must be provided']
     },
-})
+},{versionKey: false});
 
 export default model('Annoucements', AnnoucementSchema);

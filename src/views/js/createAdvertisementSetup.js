@@ -6,6 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     containerClass: 'creation_div',
     html: ``,
     buttonText: 'Crear Anuncio',
-    buttonHref: 'advertisementForm.html',
+    buttonHref: 'advertisementForm',
   });
 });

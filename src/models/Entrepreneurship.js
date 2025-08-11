@@ -26,6 +26,6 @@ const EntrepreneurshipSchema = Schema({
         type: Boolean,
         default: true
     },
-})
+},{versionKey: false});
 
 export default model('Entrepreneurships', EntrepreneurshipSchema);

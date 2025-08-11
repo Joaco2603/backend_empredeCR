@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     roleRequired: ['ENTREPRENEUR_ROLE'],
     containerClass: 'creation_div',
     html: ``,
-    buttonText: 'Crear evento',
+    buttonText: 'Crear emprendimiento',
     buttonHref: 'entrepreneurForm',
   });
   }

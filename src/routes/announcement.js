@@ -7,7 +7,9 @@ const router = Router();
 router.post('/create-announcement', async (req, res) => {
   try {
     // 1. Validate announcement data
-    const { name, description, date, address, organizer, type, isActive, ...extraData } = req.body;
+    const { name, description, address, date, type = 'annoucement', ...extraData } = req.body;
+
+    console.log("here")
 
     // 2. Create announcement function
     const announcement = await Announcement.create({
@@ -15,9 +17,8 @@ router.post('/create-announcement', async (req, res) => {
       description,
       date,
       address,
-      organizer,
       type,
-      isActive: isActive !== undefined ? isActive : true
+      isActive: true
     });
 
     // 3. Set session data if needed
@@ -31,6 +32,7 @@ router.post('/create-announcement', async (req, res) => {
     
     res.redirect(redirectTo);
   } catch (error) {
+    console.log(error)
     res.render('announcement', { 
       error: 'Error al crear el anuncio',
       formData: req.body 
