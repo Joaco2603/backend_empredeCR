@@ -4,25 +4,29 @@ export class FormValidator {
     constructor(formId, schema, endPoint = '') {
         this.form = document.getElementById(formId);
         this.schema = schema;
-        this.inputs = Array.from(this.form.querySelectorAll('input'));
+        // Incluye inputs de tipo file
+        this.inputs = Array.from(this.form.querySelectorAll('input, input[type="file"]'));
         this.spanLabel;
         this.init();
     }
 
     init() {
-        // Configurar eventos para cada input
         this.inputs.forEach(input => {
-            // Seek the span
             const spanLabel = input.nextElementSibling;
 
-            // Save original text
-            if (!spanLabel.dataset.originalText) {
-                spanLabel.dataset.originalText = spanLabel.textContent;
+            // Verifica si spanLabel existe antes de usarlo
+            if (spanLabel) {
+                if (!spanLabel.dataset.originalText) {
+                    spanLabel.dataset.originalText = spanLabel.textContent;
+                }
+
+                // Usa 'change' para archivos, 'input' para otros
+                const eventType = input.type === 'file' ? 'change' : 'input';
+                input.addEventListener(eventType, () => this.validateInput(input));
+                input.addEventListener('blur', () => this.validateInput(input));
+            } else {
+                console.warn(`No se encontró spanLabel para el input con id: ${input.id}`);
             }
-
-
-            input.addEventListener('input', () => this.validateInput(input));
-            input.addEventListener('blur', () => this.validateInput(input));
         });
 
         this.form.addEventListener('submit', (e) => {
@@ -43,7 +47,10 @@ export class FormValidator {
             if (!validator) continue;
 
             let result;
-            if (rule.name === 'matches') {
+            if (input.type === 'file') {
+                // Pasa el objeto FileList
+                result = validator(input.files, rule.param);
+            } else if (rule.name === 'matches') {
                 result = validator(input.value.trim(), rule.param, this.form);
             } else {
                 result = validator(input.value.trim(), rule.param);
@@ -72,7 +79,6 @@ export class FormValidator {
         }
     }
 
-
     validateForm() {
         let formIsValid = true;
 
@@ -80,7 +86,6 @@ export class FormValidator {
             const inputIsValid = this.validateInput(input);
             if (!inputIsValid) {
                 formIsValid = false;
-                // Scroll to first error
                 if (formIsValid === false) {
                     input.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }

@@ -1,42 +1,65 @@
 import { Router } from "express";
 import Entrepreneurship from "../models/Entrepreneurship.js";
+import multer from "multer";
+import path from "path";
 
 const router = Router();
 
-// Create entrepreneurship route
-router.post("/create-entrepreneurship", async (req, res) => {
-  try {
-    // 1. Validate entrepreneurship data
-    const { name, description, phone, address, user, isActive, ...extraData } =
-      req.body;
-
-    // 2. Create entrepreneurship function
-    const entrepreneurship = await Entrepreneurship.create({
-      name,
-      description,
-      phone,
-      address,
-      user,
-      isActive: isActive !== undefined ? isActive : true,
-    });
-
-    // 3. Set session data if needed
-    if (req.session.user) {
-      req.session.user.lastEntrepreneurshipCreated = entrepreneurship.id;
-    }
-
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || "/dashboard";
-    delete req.session.returnTo;
-
-    res.redirect(redirectTo);
-  } catch (error) {
-    res.render("entrepreneurship", {
-      error: "Error al crear el emprendimiento",
-      formData: req.body,
-    });
-  }
+// Configuración de multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // Carpeta donde se guardan las imágenes
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
 });
+const upload = multer({ storage });
+
+// Create entrepreneurship route
+router.post(
+  "/create-entrepreneurship",
+  upload.single("img"),
+  async (req, res) => {
+    try {
+      // 1. Validate entrepreneurship data
+      const { name, description, phone, address, user, type_entrepreneur } =
+        req.body;
+
+      // 2. Obtener la ruta de la imagen subida
+      const imgPath = req.file ? req.file.path : null;
+
+      // 3. Create entrepreneurship function
+      const entrepreneurship = await Entrepreneurship.create({
+        name,
+        description,
+        phone,
+        address,
+        type_entrepreneur,
+        user: req.session.user.id,
+        img: imgPath,
+        isActive: true,
+      });
+
+      // 4. Set session data if needed
+      if (req.session.user) {
+        req.session.user.lastEntrepreneurshipCreated = entrepreneurship.id;
+      }
+
+      // 5. Redirect or send response
+      const redirectTo = req.session.returnTo || "/dashboard";
+      delete req.session.returnTo;
+
+      res.redirect(redirectTo);
+    } catch (error) {
+      res.render("entrepreneurship", {
+        error: "Error al crear el emprendimiento",
+        formData: req.body,
+      });
+    }
+  },
+);
 
 // Update entrepreneurship route
 router.put("/update-entrepreneurship", async (req, res) => {

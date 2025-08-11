@@ -20,6 +20,11 @@ const validationSchema = {
     contact: [
         { name: 'required' },
         { name: 'number' }
+    ],
+    img: [
+        { name: 'fileRequired' },
+        { name: 'fileType', param: ['image/png', 'image/jpeg'] },
+        { name: 'fileMaxSize', param: 2 } // 2 MB
     ]
 };
 

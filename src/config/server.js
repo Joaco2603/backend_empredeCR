@@ -18,6 +18,9 @@ export const configureServer = () => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Uploads directory for static files 
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
   // Static files
   app.use("/css", express.static(path.join(__dirname, "../views/css")));
   app.use("/js", express.static(path.join(__dirname, "../views/js")));

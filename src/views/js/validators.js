@@ -36,7 +36,31 @@ export const validators = {
   }),
 
   number: (value) => ({
-    isValid: typeof value === 'number' && !isNaN(value) && value > 0,
+    isValid: typeof Number(value) === 'number' && !isNaN(Number(value)) && Number(value) > 0,
     error: 'Debe ser un número válido y mayor que cero'
-  })
+  }),
+
+  fileRequired: (files) => ({
+    isValid: files && files.length > 0,
+    error: 'Debes seleccionar un archivo'
+  }),
+
+  fileType: (files, allowedTypes) => {
+    if (!files || files.length === 0) return { isValid: true, error: '' };
+    const valid = Array.from(files).every(file => allowedTypes.includes(file.type));
+    return {
+      isValid: valid,
+      error: `Tipo de archivo permitido: ${allowedTypes.join(', ')}`
+    };
+  },
+
+  fileMaxSize: (files, maxSizeMB) => {
+    if (!files || files.length === 0) return { isValid: true, error: '' };
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+    const valid = Array.from(files).every(file => file.size <= maxSizeBytes);
+    return {
+      isValid: valid,
+      error: `El archivo debe pesar menos de ${maxSizeMB} MB`
+    };
+  },
 };
