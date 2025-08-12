@@ -14,7 +14,7 @@ export async function renderRoleBasedContent(config) {
     // 1. Obtener datos de la sesión desde el servidor
     const response = await fetch('/api/session', {
       method: 'GET',
-      credentials: 'include', // Importante: incluir cookies de sesión
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       }

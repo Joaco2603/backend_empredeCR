@@ -7,6 +7,10 @@ export const dynamicViewsMiddleware = (viewsPath) => {
     if (req.method !== 'GET') {
       return next();
     }
+
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
     
     try {
       let viewName = req.path.slice(1) || 'index';

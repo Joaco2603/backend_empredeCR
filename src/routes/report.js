@@ -1,230 +1,263 @@
 import { Router } from "express";
+import mongoose from "mongoose"; // Añadido import de mongoose
 import Reports from "../models/Reports.js";
 
 const router = Router();
 
-// Create report route
-router.post('/create-report', async (req, res) => {
-  try {
-    // 1. Validate report data
-    const { name, description, date, address, user, isActive, ...extraData } = req.body;
+// Helper mejorado para manejar errores
+const handleError = (res, error, status = 500, defaultMessage = 'Error en el servidor') => {
+  console.error('Error:', error);
+  return res.status(status).json({
+    success: false,
+    message: error.message || defaultMessage,
+    error: process.env.NODE_ENV === 'development' ? {
+      stack: error.stack,
+      details: error.details || null
+    } : undefined
+  });
+};
 
-    // 2. Create report function
-    const report = await Reports.create({
+// Middleware para validar ObjectIds
+const validateObjectId = (req, res, next) => {
+  if (req.params.id && !mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return handleError(res, new Error('ID no válido'), 400);
+  }
+  next();
+};
+
+// Middleware mejorado para validación de campos
+const validateReportFields = (req, res, next) => {
+  const requiredFields = {
+    name: 'Título del reporte',
+    description: 'Descripción',
+    date: 'Fecha',
+    address: 'Dirección',
+    user: 'ID de usuario'
+  };
+  
+  const missingFields = [];
+  const invalidFields = [];
+
+  // Verificar campos faltantes
+  for (const [field, description] of Object.entries(requiredFields)) {
+    if (!req.body[field]) {
+      missingFields.push(description);
+    }
+  }
+
+  // Validación específica para la fecha
+  if (req.body.date && isNaN(new Date(req.body.date).getTime())) {
+    invalidFields.push('Fecha con formato inválido');
+  }
+
+  // Validar que el user ID tenga formato válido para ObjectId
+  if (req.body.user && !mongoose.Types.ObjectId.isValid(req.body.user)) {
+    invalidFields.push('ID de usuario no válido');
+  }
+
+  if (missingFields.length > 0 || invalidFields.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error de validación',
+      errors: {
+        missingFields,
+        invalidFields
+      }
+    });
+  }
+
+  next();
+};
+
+// Ruta para crear reportes - Versión optimizada y corregida
+router.post('/create-report', validateReportFields, async (req, res) => {
+  try {
+    const { name, description, date, address, user, type = 'General' } = req.body;
+
+    const reportData = {
       name,
       description,
-      date,
+      date: new Date(date),
       address,
-      user,
-      isActive: isActive !== undefined ? isActive : true
+      user: new mongoose.Types.ObjectId(user), // Conversión explícita a ObjectId
+      type,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    const report = await Reports.create(reportData);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        id: report._id,
+        name: report.name,
+        type: report.type,
+        date: report.date
+      },
+      message: 'Reporte creado exitosamente',
+      redirect: '/dashboard',
+      timestamp: new Date()
     });
 
-    // 3. Set session data if needed
-    if (req.session.user) {
-      req.session.user.lastReportCreated = report.id;
-    }
-    
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-    
-    res.redirect(redirectTo);
   } catch (error) {
-    res.render('report', { 
-      error: 'Error al crear el reporte',
-      formData: req.body 
-    });
+    error.details = {
+      body: req.body,
+      errorType: 'DatabaseError'
+    };
+    handleError(res, error, 500, 'Error al guardar el reporte en la base de datos');
   }
 });
 
-// Update report route
-router.put('/update-report', async (req, res) => {
+// Ruta para actualizar reportes - Versión consolidada
+router.put('/update-report/:id', validateObjectId, async (req, res) => {
   try {
-    // 1. Validate report data
-    const { id, name, description, date, address, user, isActive, ...extraData } = req.body;
+    const { id } = req.params;
+    const updates = {
+      ...req.body,
+      updatedAt: new Date()
+    };
 
-    // 2. Update report function
+    // Validar y formatear fecha si existe
+    if (updates.date) {
+      updates.date = new Date(updates.date);
+    }
+
+    // Validar user ID si está presente en la actualización
+    if (updates.user && !mongoose.Types.ObjectId.isValid(updates.user)) {
+      return handleError(res, new Error('ID de usuario no válido'), 400);
+    }
+
+    const report = await Reports.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!report) {
+      return handleError(res, new Error('Reporte no encontrado'), 404);
+    }
+
+    res.json({
+      success: true,
+      data: report,
+      message: 'Reporte actualizado exitosamente'
+    });
+
+  } catch (error) {
+    handleError(res, error, 500, 'Error al actualizar el reporte');
+  }
+});
+
+// Eliminé la ruta duplicada de update-report
+
+// Ruta para eliminar reportes (borrado lógico) - Versión consolidada
+router.delete('/delete-report/:id', validateObjectId, async (req, res) => {
+  try {
+    const { id } = req.params;
     const report = await Reports.findByIdAndUpdate(id, {
-      name,
-      description,
-      date,
-      address,
-      user,
-      isActive
+      isActive: false,
+      updatedAt: new Date()
     }, { new: true });
 
     if (!report) {
-      throw new Error('Reporte no encontrado');
+      return handleError(res, new Error('Reporte no encontrado'), 404);
     }
 
-    // 3. Set session data if needed
-    if (req.session.user) {
-      req.session.user.lastReportUpdated = report.id;
-    }
-    
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-    
-    res.redirect(redirectTo);
-  } catch (error) {
-    res.render('report', { 
-      error: 'Error al actualizar el reporte',
-      formData: req.body 
+    res.json({
+      success: true,
+      message: 'Reporte desactivado exitosamente',
+      deactivatedAt: new Date()
     });
+
+  } catch (error) {
+    handleError(res, error, 500, 'Error al desactivar el reporte');
   }
 });
 
-// Delete report route
-router.delete('/delete-report', async (req, res) => {
-  try {
-    // 1. Validate report ID
-    const { id } = req.body;
+// Eliminé la ruta duplicada de delete-report
 
-    // 2. Delete report function
-    const report = await Reports.findByIdAndDelete(id);
-
-    if (!report) {
-      throw new Error('Reporte no encontrado');
-    }
-
-    // 3. Update session if needed
-    if (req.session.user && req.session.user.lastReportCreated === id) {
-      delete req.session.user.lastReportCreated;
-    }
-    
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-    
-    res.redirect(redirectTo);
-  } catch (error) {
-    res.render('report', { 
-      error: 'Error al eliminar el reporte',
-      formData: req.body 
-    });
-  }
-});
-
-// Get all reports route
+// Ruta para obtener reportes con paginación - Versión optimizada
 router.get('/reports', async (req, res) => {
   try {
-    // 1. Get all reports
-    const reports = await Reports.find({}).populate('user');
-    
-    // 2. Render reports page
-    res.render('reports', { 
-      reports,
-      user: req.user 
-    });
-  } catch (error) {
-    res.render('reports', { 
-      error: 'Error al cargar los reportes',
-      reports: [],
-      user: req.user 
-    });
-  }
-});
+    const { 
+      page = 1, 
+      limit = 10, 
+      active,
+      userId,
+      type,
+      startDate,
+      endDate
+    } = req.query;
 
-// Get report by ID route
-router.get('/report/:id', async (req, res) => {
-  try {
-    // 1. Get report by ID
-    const report = await Reports.findById(req.params.id).populate('user');
-    
-    if (!report) {
-      throw new Error('Reporte no encontrado');
+    const query = {};
+
+    if (active !== undefined) {
+      query.isActive = active === 'true';
     }
-    
-    // 2. Render report detail page
-    res.render('report-detail', { 
-      report,
-      user: req.user 
-    });
-  } catch (error) {
-    res.render('report-detail', { 
-      error: 'Error al cargar el reporte',
-      report: null,
-      user: req.user 
-    });
-  }
-});
 
-// Get active reports route
-router.get('/active-reports', async (req, res) => {
-  try {
-    // 1. Get only active reports
-    const reports = await Reports.find({ isActive: true }).populate('user');
-    
-    // 2. Render active reports page
-    res.render('active-reports', { 
-      reports,
-      user: req.user 
-    });
-  } catch (error) {
-    res.render('active-reports', { 
-      error: 'Error al cargar los reportes activos',
-      reports: [],
-      user: req.user 
-    });
-  }
-});
+    if (userId) {
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return handleError(res, new Error('ID de usuario no válido'), 400);
+      }
+      query.user = userId;
+    }
 
-// Get reports by user route
-router.get('/user-reports/:userId', async (req, res) => {
-  try {
-    // 1. Get reports by user ID
-    const reports = await Reports.find({ 
-      user: req.params.userId,
-      isActive: true 
-    }).populate('user');
-    
-    // 2. Render user reports page
-    res.render('user-reports', { 
-      reports,
-      user: req.user 
-    });
-  } catch (error) {
-    res.render('user-reports', { 
-      error: 'Error al cargar los reportes del usuario',
-      reports: [],
-      user: req.user 
-    });
-  }
-});
+    if (type) {
+      query.type = type;
+    }
 
-// Get reports by date range route
-router.get('/reports-by-date', async (req, res) => {
-  try {
-    // 1. Get date range from query parameters
-    const { startDate, endDate } = req.query;
-    
-    let query = { isActive: true };
     if (startDate && endDate) {
       query.date = {
         $gte: new Date(startDate),
         $lte: new Date(endDate)
       };
     }
+
+    const options = {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      sort: { createdAt: -1 },
+      populate: 'user'
+    };
+
+    const reports = await Reports.paginate(query, options);
+
+    res.json({
+      success: true,
+      data: reports.docs,
+      pagination: {
+        total: reports.totalDocs,
+        pages: reports.totalPages,
+        page: reports.page,
+        limit: reports.limit,
+        hasNext: reports.hasNextPage,
+        hasPrev: reports.hasPrevPage
+      }
+    });
+
+  } catch (error) {
+    handleError(res, error, 500, 'Error al obtener los reportes');
+  }
+});
+
+// Eliminé las rutas redundantes (/active-reports, /user-reports/:userId, /reports-by-date)
+
+// Ruta para obtener un reporte específico
+router.get('/report/:id', validateObjectId, async (req, res) => {
+  try {
+    const report = await Reports.findById(req.params.id).populate('user');
     
-    // 2. Get reports by date range
-    const reports = await Reports.find(query).populate('user');
+    if (!report) {
+      return handleError(res, new Error('Reporte no encontrado'), 404);
+    }
     
-    // 3. Render reports by date page
-    res.render('reports-by-date', { 
-      reports,
-      startDate,
-      endDate,
-      user: req.user 
+    res.json({
+      success: true,
+      data: report
     });
   } catch (error) {
-    res.render('reports-by-date', { 
-      error: 'Error al cargar los reportes por fecha',
-      reports: [],
-      startDate: req.query.startDate,
-      endDate: req.query.endDate,
-      user: req.user 
-    });
+    handleError(res, error, 500, 'Error al obtener el reporte');
   }
 });
 

@@ -1,12 +1,17 @@
-import { validators } from './validators.js'
+import { validators } from './validators.js';
 
 export class FormValidator {
     constructor(formId, schema, endPoint = '') {
         this.form = document.getElementById(formId);
+
+        if (!this.form) {
+            console.error(`No se encontró ningún formulario con el ID "${formId}".`);
+            return;
+        }
+
         this.schema = schema;
-        // Incluye inputs de tipo file
         this.inputs = Array.from(this.form.querySelectorAll('input, input[type="file"]'));
-        this.spanLabel;
+        this.spanLabel = null;
         this.init();
     }
 
@@ -14,13 +19,11 @@ export class FormValidator {
         this.inputs.forEach(input => {
             const spanLabel = input.nextElementSibling;
 
-            // Verifica si spanLabel existe antes de usarlo
             if (spanLabel) {
                 if (!spanLabel.dataset.originalText) {
                     spanLabel.dataset.originalText = spanLabel.textContent;
                 }
 
-                // Usa 'change' para archivos, 'input' para otros
                 const eventType = input.type === 'file' ? 'change' : 'input';
                 input.addEventListener(eventType, () => this.validateInput(input));
                 input.addEventListener('blur', () => this.validateInput(input));
@@ -48,7 +51,6 @@ export class FormValidator {
 
             let result;
             if (input.type === 'file') {
-                // Pasa el objeto FileList
                 result = validator(input.files, rule.param);
             } else if (rule.name === 'matches') {
                 result = validator(input.value.trim(), rule.param, this.form);
@@ -86,12 +88,25 @@ export class FormValidator {
             const inputIsValid = this.validateInput(input);
             if (!inputIsValid) {
                 formIsValid = false;
-                if (formIsValid === false) {
-                    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
+                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
 
         return formIsValid;
     }
 }
+
+// Ejemplo de uso asegurando que el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    const schema = {
+        nombre: [
+            { name: 'required' },
+            { name: 'minLength', param: 3 }
+        ],
+        archivo: [
+            { name: 'fileSize', param: 2000000 } // 2 MB
+        ]
+    };
+
+    new FormValidator('form', schema);
+});

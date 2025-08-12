@@ -19,10 +19,6 @@ import { initSession } from "./config/session.js";
 const app = configureServer();
 const port = config.PORT;
 
-// Middleware
-app.use(authMiddleware());
-app.use(dynamicViewsMiddleware(app.get("views")));
-
 // Init session
 initSession(app);
 
@@ -30,12 +26,16 @@ initSession(app);
 connectDB();
 
 // Routes
-app.use("/", authRoutes);
-app.use("/user", userRoutes);
-app.use("/transport", transportRoutes);
-app.use("/entrepreneurship", entrepreneurshipRoutes);
-app.use("/announcement", announcementRoutes);
-app.use("/report", reportRoutes);
+app.use("/api/", authRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/transport", transportRoutes);
+app.use("/api/entrepreneurship", entrepreneurshipRoutes);
+app.use("/api/announcement", announcementRoutes);
+app.use("/api/report", reportRoutes);
+
+// Middleware
+app.use(authMiddleware());
+app.use(dynamicViewsMiddleware(app.get("views")));
 
 // Error handling
 app.use((err, req, res, next) => {

@@ -94,7 +94,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-router.get('/api/session', (req, res) => {
+router.get('/session', (req, res) => {
   try {
     // Verificar si existe una sesión activa
     if (!req.session) {
@@ -150,9 +150,6 @@ router.get('/api/session', (req, res) => {
       }
     };
 
-    // Log para debugging (remover en producción)
-    console.log(`Sesión consultada - Usuario: ${req.session.user.name}, Rol: ${req.session.user.rol}`);
-
     res.json(sessionData);
 
   } catch (error) {
@@ -167,7 +164,7 @@ router.get('/api/session', (req, res) => {
 });
 
 // Endpoint adicional para verificar solo el estado de autenticación
-router.get('/api/auth/check', (req, res) => {
+router.get('/auth/check', (req, res) => {
   const isAuthenticated = !!(req.session && req.session.user);
 
   res.json({
@@ -177,7 +174,7 @@ router.get('/api/auth/check', (req, res) => {
 });
 
 // Endpoint para obtener información básica del usuario
-router.get('/api/user/profile', (req, res) => {
+router.get('/user/profile', (req, res) => {
   try {
     if (!req.session || !req.session.user) {
       return res.status(401).json({
@@ -208,7 +205,7 @@ router.get('/api/user/profile', (req, res) => {
 });
 
 // Endpoint para cerrar sesión
-router.post('/api/logout', (req, res) => {
+router.post('/logout', (req, res) => {
   try {
     if (!req.session) {
       return res.status(400).json({

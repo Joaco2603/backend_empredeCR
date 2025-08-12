@@ -1,48 +1,38 @@
 import { Router } from "express";
 import Transport from "../models/Transport.js";
 
-const router = Router();
+  const router = Router();
 
-// Create transport route
-router.post('/create-transport', async (req, res) => {
+// Crear transporte
+router.post('/', async (req, res) => {
   try {
-    // 1. Validate transport data
-    const { name, description, price, address, isActive, ...extraData } = req.body;
-
-    // 2. Create transport function
     const transport = await Transport.create({
-      name,
-      description,
-      price,
-      address,
-      isActive: isActive !== undefined ? isActive : true
+      name: req.body.name,
+      description: `Contacto: ${req.body.contact} | Horarios: ${req.body.schedules}`,
+      address: req.body.address,
+      price: req.body.price,
+      isActive: true
     });
 
-    // 3. Set session data if needed
-    if (req.session.user) {
-      req.session.user.lastTransportCreated = transport.id;
-    }
-    
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-    
-    res.redirect(redirectTo);
+    res.status(201).json({ 
+      success: true, 
+      data: transport 
+    });
   } catch (error) {
-    res.render('transport', { 
-      error: 'Error al crear el transporte',
-      formData: req.body 
+    console.log(error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error en el servidor' 
     });
   }
 });
 
-// Update transport route
-router.put('/update-transport', async (req, res) => {
+// Actualizar transporte
+router.put('/:id', async (req, res) => {
   try {
-    // 1. Validate transport data
-    const { id, name, description, price, address, isActive, ...extraData } = req.body;
+    const { id } = req.params;
+    const { name, description, price, address, isActive } = req.body;
 
-    // 2. Update transport function
     const transport = await Transport.findByIdAndUpdate(id, {
       name,
       description,
@@ -52,122 +42,113 @@ router.put('/update-transport', async (req, res) => {
     }, { new: true });
 
     if (!transport) {
-      throw new Error('Transporte no encontrado');
-    }
-
-    // 3. Set session data if needed
-    if (req.session.user) {
-      req.session.user.lastTransportUpdated = transport.id;
+      return res.status(404).json({
+        success: false,
+        message: 'Transporte no encontrado'
+      });
     }
     
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-    
-    res.redirect(redirectTo);
+    res.json({ 
+      success: true, 
+      message: 'Transporte actualizado con éxito',
+      data: transport
+    });
   } catch (error) {
-    res.render('transport', { 
-      error: 'Error al actualizar el transporte',
-      formData: req.body 
+    console.error('Error al actualizar transporte:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al actualizar el transporte',
+      error: error.message
     });
   }
 });
 
-// Delete transport route
-router.delete('/delete-transport', async (req, res) => {
+// Eliminar transporte
+router.delete('/:id', async (req, res) => {
   try {
-    // 1. Validate transport ID
-    const { id } = req.body;
+    const { id } = req.params;
 
-    // 2. Delete transport function
     const transport = await Transport.findByIdAndDelete(id);
-
     if (!transport) {
-      throw new Error('Transporte no encontrado');
-    }
-
-    // 3. Update session if needed
-    if (req.session.user && req.session.user.lastTransportCreated === id) {
-      delete req.session.user.lastTransportCreated;
+      return res.status(404).json({
+        success: false,
+        message: 'Transporte no encontrado'
+      });
     }
     
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-    
-    res.redirect(redirectTo);
+    res.json({ 
+      success: true, 
+      message: 'Transporte eliminado con éxito'
+    });
   } catch (error) {
-    res.render('transport', { 
-      error: 'Error al eliminar el transporte',
-      formData: req.body 
+    console.error('Error al eliminar transporte:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al eliminar el transporte',
+      error: error.message
     });
   }
 });
 
-// Get all transports route
-router.get('/transports', async (req, res) => {
+// Obtener todos los transportes
+router.get('/', async (req, res) => {
   try {
-    // 1. Get all transports
     const transports = await Transport.find({});
-    
-    // 2. Render transports page
-    res.render('transports', { 
-      transports,
-      user: req.user 
+    res.json({
+      success: true,
+      data: transports
     });
   } catch (error) {
-    res.render('transports', { 
-      error: 'Error al cargar los transportes',
-      transports: [],
-      user: req.user 
+    console.error('Error al obtener transportes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al cargar los transportes',
+      error: error.message
     });
   }
 });
 
-// Get transport by ID route
-router.get('/transport/:id', async (req, res) => {
+// Obtener transporte por ID
+router.get('/:id', async (req, res) => {
   try {
-    // 1. Get transport by ID
     const transport = await Transport.findById(req.params.id);
-    
     if (!transport) {
-      throw new Error('Transporte no encontrado');
+      return res.status(404).json({
+        success: false,
+        message: 'Transporte no encontrado'
+      });
     }
-    
-    // 2. Render transport detail page
-    res.render('transport-detail', { 
-      transport,
-      user: req.user 
+
+    res.json({
+      success: true,
+      data: transport
     });
   } catch (error) {
-    res.render('transport-detail', { 
-      error: 'Error al cargar el transporte',
-      transport: null,
-      user: req.user 
+    console.error('Error al obtener transporte:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al cargar el transporte',
+      error: error.message
     });
   }
 });
 
-// Get active transports route
-router.get('/active-transports', async (req, res) => {
+// Obtener solo transportes activos
+router.get('/activos/todos', async (req, res) => {
   try {
-    // 1. Get only active transports
     const transports = await Transport.find({ isActive: true });
-    
-    // 2. Render active transports page
-    res.render('active-transports', { 
-      transports,
-      user: req.user 
+    res.json({
+      success: true,
+      data: transports
     });
   } catch (error) {
-    res.render('active-transports', { 
-      error: 'Error al cargar los transportes activos',
-      transports: [],
-      user: req.user 
+    console.error('Error al obtener transportes activos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al cargar los transportes activos',
+      error: error.message
     });
   }
 });
 
 export default router;
-
-
