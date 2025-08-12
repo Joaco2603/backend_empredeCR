@@ -36,12 +36,14 @@ router.post('/login', async (req, res) => {
       name: user.name
     };
 
-    // 4. Redirect 
-    const redirectTo = req.session.returnTo || 'dashboard';
+    // Construir la URL completa (puedes cambiar localhost:8080 por tu dominio real)
+    const fullUrl = `http://localhost:8080/dashboard`;
+
     delete req.session.returnTo;
-    res.redirect(redirectTo);
+    res.redirect(fullUrl);
     return;
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Contact admin to fix it'
@@ -79,10 +81,11 @@ router.post('/signup', async (req, res) => {
       name: user.name,
     };
 
-    // 4. Redirect
-    const redirectTo = req.session.returnTo || 'dashboard';
+    // Construir la URL completa (puedes cambiar localhost:8080 por tu dominio real)
+    const fullUrl = `http://localhost:8080/dashboard`;
+
     delete req.session.returnTo;
-    res.redirect(redirectTo);
+    res.redirect(fullUrl);
     return;
   } catch (error) {
     console.log(error);

@@ -26,16 +26,19 @@ export async function showInformationInCards(url, containerId, cardPropertiesObj
             const card = document.createElement('div');
             card.className = 'card';
 
-            // Imagen y título (puedes ajustar según tus datos)
-            const imgSrc = item.imagen || '/imgs/img_cards/event.jpg';
+            // Usa item.img si existe, si no una imagen por defecto
+            const imgSrc = item.img ? item.img : '/imgs/img_cards/event.jpg';
             const title = item.name || item.titulo || 'Sin título';
 
             // Genera dinámicamente los campos de la card
             let propertiesHtml = '';
             cardPropertiesObject.forEach(prop => {
-                propertiesHtml += `
-                    <p><strong>${prop.label}:</strong> ${item[prop.key] ?? 'Sin información'}</p>
-                `;
+                // No mostrar la propiedad img como texto
+                if (prop.key !== 'img') {
+                    propertiesHtml += `
+                        <p><strong>${prop.label}:</strong> ${item[prop.key] ?? 'Sin información'}</p>
+                    `;
+                }
             });
 
             card.innerHTML = `

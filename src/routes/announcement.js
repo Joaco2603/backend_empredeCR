@@ -1,42 +1,43 @@
 import { Router } from "express";
+import multer from 'multer';
 import Announcement from "../models/Announcement.js";
+
+const upload = multer({ 
+  dest: 'uploads/' // Directorio temporal para archivos subidos
+});
 
 const router = Router();
 
 // Create announcement route
-router.post('/', async (req, res) => {
+router.post('/', upload.single('img'), async (req, res) => {
   try {
-    // 1. Validate announcement data
-    const { name, description, address, date, type = 'annoucement', ...extraData } = req.body;
+    // 1. Validar datos del anuncio
+    const { name, description, address, date, type = 'announcement' } = req.body;
 
-    // 2. Create announcement function
-    const announcement = await Announcement.create({
+    // 2. Crear anuncio con la referencia a la imagen
+    await Announcement.create({
       name,
       description,
       date,
       address,
       type,
-      isActive: true
+      isActive: true,
+      img: req.file ? `/uploads/${req.file.filename}` : null // Guarda la ruta de la imagen
     });
 
-    // 3. Set session data if needed
-    if (req.session.user) {
-      req.session.user.lastAnnouncementCreated = announcement.id;
-    }
+    console.log('creado anuncio')
 
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-
-    res.redirect(redirectTo);
+    // ... resto de tu código ...
+    res.redirect('http://localhost:8080/advertisement');
   } catch (error) {
-    console.log(error)
-    res.render('announcement', {
+    console.error('Error:', error);
+    res.render('advertisement', {
       error: 'Error al crear el anuncio',
       formData: req.body
     });
   }
 });
+
 
 // Update announcement route
 router.put('/', async (req, res) => {
@@ -109,7 +110,7 @@ router.delete('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     // 1. Get all announcements
-    const announcements = await Announcement.find({}).populate('organizer');
+    const announcements = await Announcement.find({});
 
     // 2. Render announcements page
     res.render('announcements', {
@@ -128,7 +129,7 @@ router.get('/', async (req, res) => {
 router.get('/active', async (req, res) => {
   try {
     // 1. Get only active announcements
-    const announcements = await Announcement.find({ isActive: true });
+    const announcements = await Announcement.find({ isActive: true, type: 'announcement' });
 
     res.status(200).json(announcements);
   } catch (error) {

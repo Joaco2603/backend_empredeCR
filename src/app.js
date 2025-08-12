@@ -12,6 +12,7 @@ import {
   entrepreneurshipRoutes,
   announcementRoutes,
   reportRoutes,
+  eventRoutes,
 } from "./routes/index.js";
 import { initSession } from "./config/session.js";
 
@@ -28,6 +29,7 @@ connectDB();
 // Routes
 app.use("/api/", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/event", eventRoutes);
 app.use("/api/transport", transportRoutes);
 app.use("/api/entrepreneurship", entrepreneurshipRoutes);
 app.use("/api/announcement", announcementRoutes);

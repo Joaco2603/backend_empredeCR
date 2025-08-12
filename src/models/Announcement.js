@@ -17,6 +17,9 @@ const AnnoucementSchema = Schema({
         type: String,
         required: [true, 'Address must be provided']
     },
+    img:{
+        type: String,
+    },
     isActive: {
         type: Boolean,
         default: true

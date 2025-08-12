@@ -5,11 +5,13 @@ import transportRoutes from './transport.js';
 import entrepreneurshipRoutes from './entrepreneurship.js';
 import announcementRoutes from './announcement.js';
 import reportRoutes from './report.js';
+import eventRoutes from './event.js';
 
 // Export all routes
 export {
   authRoutes,
   userRoutes,
+  eventRoutes,
   transportRoutes,
   entrepreneurshipRoutes,
   announcementRoutes,
@@ -23,5 +25,6 @@ export default {
   transportRoutes,
   entrepreneurshipRoutes,
   announcementRoutes,
+  eventRoutes,
   reportRoutes
 };
