@@ -13,9 +13,14 @@ const validationSchema = {
         { name: 'maxLength', param: 400 },
     ],
     address: [
-        {name: 'required'},
+        { name: 'required' },
         { name: 'minLength', param: 5 },
         { name: 'maxLength', param: 400 },
+    ],
+    img: [
+        { name: 'file', },
+        { extensions: ['jpg', 'jpeg', 'png'] },
+        { maxSize: 2 * 1024 * 1024, }
     ]
 };
 

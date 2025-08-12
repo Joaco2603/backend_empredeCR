@@ -3,6 +3,7 @@ import { showInformationInCards } from "./showInformationInCards.js";
 document.addEventListener('DOMContentLoaded', async () => {
     const properties = [
         { key: '_id', label: 'ID' },
+        { key: 'img', label: '' },
         { key: 'name', label: 'Nombre' },
         { key: 'description', label: 'Descripción' },
         { key: 'date', label: 'Fecha' },
