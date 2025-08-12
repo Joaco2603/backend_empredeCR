@@ -11,7 +11,7 @@
 </head>
 <body>
   <div class="div_center">
-     <form class="form" id="form" method="POST">
+     <form class="form" id="form" method="POST" action="/api/report" enctype="multipart/form-data">
         <div class="div_sub_container_form">
           <a href="/complaint" class="button_back">
             <div class="button_back_box">
@@ -47,11 +47,11 @@
 
         <select name="type" class="custom-select" required>
           <option value="" disabled selected>Selecciona el tipo de queja</option>
-          <option value="Ruido">Ruido excesivo</option>
-          <option value="Basura">Acumulación de basura</option>
-          <option value="Seguridad">Problema de seguridad</option>
-          <option value="Infraestructura">Daño en infraestructura</option>
-          <option value="Otro">Otro</option>
+          <option value="noise">Ruido excesivo</option>
+          <option value="trash">Acumulación de basura</option>
+          <option value="secure">Problema de seguridad</option>
+          <option value="infraestructure">Daño en infraestructura</option>
+          <option value="others">Otro</option>
         </select>
 
         <button type="submit" class="button button_color_primary">Crear Queja</button>

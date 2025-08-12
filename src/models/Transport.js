@@ -7,8 +7,13 @@ let TransportSchema = new Schema({
         type: String,
         required: [true, 'Name must be provided']
     },
-    description: {
+    schedules:{
         type: String,
+        required: [true, 'Schedules must be provided']
+    },
+    phone:{
+        type: Number,
+        required: [true, 'Phone must be provided']
     },
     price: {
         type: Number,

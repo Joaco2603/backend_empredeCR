@@ -5,19 +5,18 @@ import Transport from "../models/Transport.js";
 
 // Crear transporte
 router.post('/', async (req, res) => {
+  console.log(req.body)
   try {
     const transport = await Transport.create({
       name: req.body.name,
-      description: `Contacto: ${req.body.contact} | Horarios: ${req.body.schedules}`,
+      phone: req.body.contact,
+      schedules: req.body.schedules,
       address: req.body.address,
       price: req.body.price,
       isActive: true
     });
 
-    res.status(201).json({ 
-      success: true, 
-      data: transport 
-    });
+    res.redirect('http://localhost:8080/transport')
   } catch (error) {
     console.log(error);
     res.status(500).json({ 
@@ -90,23 +89,23 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Obtener todos los transportes
-router.get('/', async (req, res) => {
+// Obtener solo transportes activos
+router.get('/active', async (req, res) => {
   try {
-    const transports = await Transport.find({});
-    res.json({
-      success: true,
-      data: transports
-    });
+    const transports = await Transport.find({ isActive: true });
+    
+
+    res.json(transports);
   } catch (error) {
-    console.error('Error al obtener transportes:', error);
+    console.error('Error al obtener transportes activos:', error);
     res.status(500).json({
       success: false,
-      message: 'Error al cargar los transportes',
+      message: 'Error al cargar los transportes activos',
       error: error.message
     });
   }
 });
+
 
 // Obtener transporte por ID
 router.get('/:id', async (req, res) => {
@@ -119,10 +118,8 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    res.json({
-      success: true,
-      data: transport
-    });
+    res.json(transport);
+    return;
   } catch (error) {
     console.error('Error al obtener transporte:', error);
     res.status(500).json({
@@ -133,22 +130,5 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Obtener solo transportes activos
-router.get('/activos/todos', async (req, res) => {
-  try {
-    const transports = await Transport.find({ isActive: true });
-    res.json({
-      success: true,
-      data: transports
-    });
-  } catch (error) {
-    console.error('Error al obtener transportes activos:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error al cargar los transportes activos',
-      error: error.message
-    });
-  }
-});
 
 export default router;

@@ -2,8 +2,9 @@
  * Renderiza botones de administrador (Editar/Borrar) en elementos .card
  * @param {string} cardSelector - Selector CSS para las cards (default: '.card')
  * @param {string} url - URL base para las acciones de borrado (default: '')
+ * @param {boolean} showImage - Si es true (default), mantiene la imagen; si es false, la elimina de la card
  */
-export function renderAdminButtons(cardSelector = '.card', url = '') {
+export function renderAdminButtons(cardSelector = '.card', url = '', showImage = true) {
   // Selecciona TODAS las cards en la página
   const cards = document.querySelectorAll(cardSelector);
 
@@ -17,6 +18,12 @@ export function renderAdminButtons(cardSelector = '.card', url = '') {
   cards.forEach(card => {
     // Verificar si ya tiene botones para evitar duplicados
     if (card.querySelector('.card_buttons')) return;
+
+    // Si showImage es false, elimina la imagen de la card si existe
+    if (!showImage) {
+      const img = card.querySelector('img');
+      if (img) img.remove();
+    }
 
     // Crear contenedor para los botones
     const buttonContainer = document.createElement('div');

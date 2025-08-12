@@ -70,20 +70,21 @@ const validateReportFields = (req, res, next) => {
 };
 
 // Ruta para crear reportes - Versión optimizada y corregida
-router.post('/create-report', validateReportFields, async (req, res) => {
+router.post('/', validateReportFields, async (req, res) => {
   try {
-    const { name, description, date, address, user, type = 'General' } = req.body;
+    const { name, description, date, address, type = 'others' } = req.body;
+
+    console.log(req.session.user.id);
 
     const reportData = {
       name,
       description,
-      date: new Date(date),
+      date: date,
       address,
-      user: new mongoose.Types.ObjectId(user), // Conversión explícita a ObjectId
+      user: new ObjectId(req.session.user.id),
       type,
       isActive: true,
       createdAt: new Date(),
-      updatedAt: new Date()
     };
 
     const report = await Reports.create(reportData);
@@ -97,7 +98,7 @@ router.post('/create-report', validateReportFields, async (req, res) => {
         date: report.date
       },
       message: 'Reporte creado exitosamente',
-      redirect: '/dashboard',
+      redirect: '/complaint',
       timestamp: new Date()
     });
 
