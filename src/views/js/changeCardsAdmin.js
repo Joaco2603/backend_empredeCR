@@ -1,20 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const userRole = localStorage.getItem('rol')?.toLowerCase().trim();
-
-
-  if (userRole === 'admin') {
-    renderAdminButtons();
-  }
-});
-
 /**
  * Renderiza botones de administrador (Editar/Borrar) en elementos .card
  * @param {string} cardSelector - Selector CSS para las cards (default: '.card')
+ * @param {string} url - URL base para las acciones de borrado (default: '')
  */
-function renderAdminButtons(cardSelector = '.card') {
+export function renderAdminButtons(cardSelector = '.card', url = '') {
   // Selecciona TODAS las cards en la página
   const cards = document.querySelectorAll(cardSelector);
-  
+
   // Si no hay cards, salir
   if (!cards.length) {
     console.warn('No se encontraron elementos con el selector:', cardSelector);
@@ -29,7 +21,7 @@ function renderAdminButtons(cardSelector = '.card') {
     // Crear contenedor para los botones
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'card_buttons';
-    
+
     // Crear botón Editar
     const editButton = createActionButton({
       text: 'Editar',
@@ -41,12 +33,12 @@ function renderAdminButtons(cardSelector = '.card') {
     const deleteButton = createActionButton({
       text: 'Borrar',
       className: 'delete_btn',
-      onClick: () => handleDeleteAction(card)
+      onClick: () => handleDeleteAction(card, url)
     });
 
     // Agregar botones al contenedor
     buttonContainer.append(editButton, deleteButton);
-    
+
     // Agregar contenedor a la card
     card.appendChild(buttonContainer);
   });
@@ -55,7 +47,7 @@ function renderAdminButtons(cardSelector = '.card') {
 /**
  * Crea un botón de acción estilizado
  */
-function createActionButton({text, className, onClick}) {
+function createActionButton({ text, className, onClick }) {
   const button = document.createElement('button');
   button.textContent = text;
   button.className = `admin-btn ${className}`;
@@ -78,11 +70,29 @@ function handleEditAction(cardElement) {
 /**
  * Maneja la acción de borrado
  */
-function handleDeleteAction(cardElement) {
+async function handleDeleteAction(cardElement, url) {
   if (confirm('¿Estás seguro de borrar este elemento?')) {
-    const cardId = cardElement.dataset.id || 'unknown';
-    console.log(`Borrando card con ID: ${cardId}`);
-    cardElement.remove();
-    // Aquí iría tu llamada API para borrado real
+    // Busca el ID dentro de .card-content > p > strong
+    let cardId = cardElement.dataset.id;
+    if (!cardId) {
+      const strong = cardElement.querySelector('.card-content p');
+      cardId = strong ? strong.textContent.trim() : 'unknown';
+      cardId = cardId.split(':')[1].trim();
+    }
+    try {
+      const response = await fetch(`${url}/${cardId}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        console.log(`Borrado exitoso de card con ID: ${cardId}`);
+        cardElement.remove();
+      } else {
+        const error = await response.text();
+        alert(`Error al borrar: ${error}`);
+      }
+    } catch (err) {
+      alert('Error de red al intentar borrar.');
+      console.error(err);
+    }
   }
 }

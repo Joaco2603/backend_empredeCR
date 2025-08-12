@@ -23,17 +23,17 @@ router.post('/', async (req, res) => {
     if (req.session.user) {
       req.session.user.lastAnnouncementCreated = announcement.id;
     }
-    
+
     // 4. Redirect or send response
     const redirectTo = req.session.returnTo || '/dashboard';
     delete req.session.returnTo;
-    
+
     res.redirect(redirectTo);
   } catch (error) {
     console.log(error)
-    res.render('announcement', { 
+    res.render('announcement', {
       error: 'Error al crear el anuncio',
-      formData: req.body 
+      formData: req.body
     });
   }
 });
@@ -63,25 +63,25 @@ router.put('/', async (req, res) => {
     if (req.session.user) {
       req.session.user.lastAnnouncementUpdated = announcement.id;
     }
-    
+
     // 4. Redirect or send response
     const redirectTo = req.session.returnTo || '/dashboard';
     delete req.session.returnTo;
-    
+
     res.redirect(redirectTo);
   } catch (error) {
-    res.render('announcement', { 
+    res.render('announcement', {
       error: 'Error al actualizar el anuncio',
-      formData: req.body 
+      formData: req.body
     });
   }
 });
 
 // Delete announcement route
-router.delete('/', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     // 1. Validate announcement ID
-    const { id } = req.body;
+    const { id } = req.params; // <-- Cambiado de req.body a req.params
 
     // 2. Delete announcement function
     const announcement = await Announcement.findByIdAndDelete(id);
@@ -94,36 +94,33 @@ router.delete('/', async (req, res) => {
     if (req.session.user && req.session.user.lastAnnouncementCreated === id) {
       delete req.session.user.lastAnnouncementCreated;
     }
-    
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-    
-    res.redirect(redirectTo);
+
+    // 4. Enviar respuesta JSON de éxito
+    res.status(200).json({ message: 'Anuncio eliminado correctamente' });
   } catch (error) {
-    res.render('announcement', { 
-      error: 'Error al eliminar el anuncio',
-      formData: req.body 
+    res.status(500).json({
+      error: 'Error al eliminar el anuncio'
     });
   }
 });
+
 
 // Get all announcements route
 router.get('/', async (req, res) => {
   try {
     // 1. Get all announcements
     const announcements = await Announcement.find({}).populate('organizer');
-    
+
     // 2. Render announcements page
-    res.render('announcements', { 
+    res.render('announcements', {
       announcements,
-      user: req.user 
+      user: req.user
     });
   } catch (error) {
-    res.render('announcements', { 
+    res.render('announcements', {
       error: 'Error al cargar los anuncios',
       announcements: [],
-      user: req.user 
+      user: req.user
     });
   }
 });
@@ -132,14 +129,14 @@ router.get('/active', async (req, res) => {
   try {
     // 1. Get only active announcements
     const announcements = await Announcement.find({ isActive: true });
-    
+
     res.status(200).json(announcements);
   } catch (error) {
     console.log(error);
-    res.render('advertisement', { 
+    res.render('advertisement', {
       error: 'Error al cargar los anuncios activos',
       announcements: [],
-      user: req.user 
+      user: req.user
     });
   }
 });
@@ -149,21 +146,21 @@ router.get('/active', async (req, res) => {
 router.get('/organizer-announcements/:organizerId', async (req, res) => {
   try {
     // 1. Get announcements by organizer ID
-    const announcements = await Announcement.find({ 
+    const announcements = await Announcement.find({
       organizer: req.params.organizerId,
-      isActive: true 
+      isActive: true
     }).populate('organizer');
-    
+
     // 2. Render organizer announcements page
-    res.render('organizer-announcements', { 
+    res.render('organizer-announcements', {
       announcements,
-      user: req.user 
+      user: req.user
     });
   } catch (error) {
-    res.render('organizer-announcements', { 
+    res.render('organizer-announcements', {
       error: 'Error al cargar los anuncios del organizador',
       announcements: [],
-      user: req.user 
+      user: req.user
     });
   }
 });
@@ -172,23 +169,23 @@ router.get('/organizer-announcements/:organizerId', async (req, res) => {
 router.get('/announcements-by-type/:type', async (req, res) => {
   try {
     // 1. Get announcements by type
-    const announcements = await Announcement.find({ 
+    const announcements = await Announcement.find({
       type: req.params.type,
-      isActive: true 
+      isActive: true
     }).populate('organizer');
-    
+
     // 2. Render announcements by type page
-    res.render('announcements-by-type', { 
+    res.render('announcements-by-type', {
       announcements,
       type: req.params.type,
-      user: req.user 
+      user: req.user
     });
   } catch (error) {
-    res.render('announcements-by-type', { 
+    res.render('announcements-by-type', {
       error: 'Error al cargar los anuncios por tipo',
       announcements: [],
       type: req.params.type,
-      user: req.user 
+      user: req.user
     });
   }
 });
