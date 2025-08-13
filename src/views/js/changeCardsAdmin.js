@@ -4,7 +4,7 @@
  * @param {string} url - URL base para las acciones de borrado (default: '')
  * @param {boolean} showImage - Si es true (default), mantiene la imagen; si es false, la elimina de la card
  */
-export function renderAdminButtons(cardSelector = '.card', url = '', showImage = true) {
+export function renderAdminButtons(cardSelector = '.card', url = '', location = '') {
   // Selecciona TODAS las cards en la página
   const cards = document.querySelectorAll(cardSelector);
 
@@ -27,7 +27,7 @@ export function renderAdminButtons(cardSelector = '.card', url = '', showImage =
     const editButton = createActionButton({
       text: 'Editar',
       className: 'edit_btn',
-      onClick: () => handleEditAction(card)
+      onClick: () => handleEditAction(card, location)
     });
 
     // Crear botón Borrar
@@ -62,10 +62,17 @@ function createActionButton({ text, className, onClick }) {
 /**
  * Maneja la acción de edición
  */
-function handleEditAction(cardElement) {
-  const cardId = cardElement.dataset.id || 'unknown';
-  console.log(`Editando card con ID: ${cardId}`);
-  // Aquí iría tu lógica de edición real
+function handleEditAction(cardElement, location) {
+  // Obtén el ID de la card
+  let cardId = cardElement.dataset.id;
+  if (!cardId) {
+    const strong = cardElement.querySelector('.card-content p');
+    cardId = strong ? strong.textContent.trim() : 'unknown';
+    cardId = cardId.split(':')[1].trim();
+  }
+
+  // Redirige al formulario de edición con el ID
+  window.location.href = location + cardId;
 }
 
 /**

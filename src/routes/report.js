@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
       address,
       user: new ObjectId(req.session.user.id),
       type,
-      isActive: true,
+      isActive: false,
       createdAt: new Date(),
     };
 
@@ -43,11 +43,6 @@ router.put('/:id', async (req, res) => {
     // Validar y formatear fecha si existe
     if (updates.date) {
       updates.date = new Date(updates.date);
-    }
-
-    // Validar user ID si está presente en la actualización
-    if (updates.user && !mongoose.Types.ObjectId.isValid(updates.user)) {
-      return handleError(res, new Error('ID de usuario no válido'), 400);
     }
 
     const report = await Reports.findByIdAndUpdate(id, updates, {

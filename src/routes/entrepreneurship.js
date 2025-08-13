@@ -39,7 +39,7 @@ router.post(
         type_entrepreneur,
         user: req.session.user.id,
         img: imgPath,
-        isActive: true,
+        isActive: false,
       });
 
       // 4. Set session data if needed
