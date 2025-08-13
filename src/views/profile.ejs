@@ -63,26 +63,26 @@
     </section>
 
     <!-- Formulario editable -->
-    <form class="form form_user_profile">
+    <form class="form form_user_profile" action="/api/update" method="POST" >
       <h2 class="section_heading">Editar informacion</h2>
       <label>
-        <input required="" placeholder="" type="name" class="input" id="name"/>
+        <input required="" placeholder="" type="name" class="input" id="name" name="name"/>
         <span>Nombre</span>
       </label>
       <label>
-        <input required="" placeholder="" type="last_name" class="input" id="last_name"/>
+        <input required="" placeholder="" type="last_name" class="input" id="last_name" name="last_name"/>
         <span>Apellido</span>
       </label>
       <label>
-        <input required="" placeholder="" type="email" class="input" id="email"/>
+        <input required="" placeholder="" type="email" class="input" id="email" name="email"/>
         <span>Correo</span>
       </label>
       <label>
-        <input required="" placeholder="" type="password" class="input" id="password"/>
+        <input placeholder="" type="password" class="input" id="password" name="password"/>
         <span>Contraseña</span>
       </label>
       <input type="date" value="2020-07-31" class="input" id="date">
-      <button class="button button_color_primary">Editar</button>
+      <button type="submit" class="button button_color_primary">Editar</button>
       </section>
 
   </main>

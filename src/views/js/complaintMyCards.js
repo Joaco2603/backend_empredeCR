@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         { key: 'createdAt', label: 'Creada' }
     ];
 
-    await showInformationInCards('/api/report/active', 'container_cards', properties, false);
+    await showInformationInCards('/api/report/my_reports', 'container_cards', properties, false);
 
     // Obtiene el rol del usuario usando fetch a /api/session
     try {
@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const rol = session?.user?.rol;
             if (rol === 'ADMIN_ROLE') {
                 import('./changeCardsAdmin.js').then(module => {
-                    if (typeof module.renderAdminButtons === 'function') {
-                        module.renderAdminButtons('.card', '/api/my_reports', '/api/report/update/');
+                    if (typeof module.renderElectionButtons === 'function') {
+                    module.renderAdminButtons('.card', '/api/report', '/api/report/update/');
                     } else if (typeof window.renderAdminButtons === 'function') {
                         window.renderAdminButtons();
                     }

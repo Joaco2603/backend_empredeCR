@@ -60,7 +60,6 @@ router.post('/login', async (req, res) => {
 router.post('/signup', async (req, res) => {
   try {
     const { email, password, rol, name, last_name } = req.body;
-    console.log(req.body)
 
     // 1. Hash the password
     const saltRounds = 10;
@@ -104,6 +103,72 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+router.post('/update', async (req, res) => {
+  try {
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({ success: false, message: 'No autenticado' });
+    }
+    const userId = req.session.user.id;
+    const { name, last_name, phone, birthdate, email, password } = req.body;
+    
+    console.log(userId);
+    console.log(req.body);
+    
+    // Construir objeto de actualización dinámicamente
+    const updateData = {
+      name,
+      last_name,
+      phone,
+      birthdate,
+      email
+    };
+    
+    // Solo hashear y incluir password si se proporcionó y es válido
+    if (password !== undefined && password !== '' && password.trim() !== '') {
+      // Validación básica de password (opcional)
+      if (password.length < 6) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'El password debe tener al menos 6 caracteres' 
+        });
+      }
+      
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      updateData.password = hashedPassword;
+    }
+    
+    // Actualiza el usuario en la base de datos
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true }
+    );
+    
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+    
+    // Actualiza la sesión con los nuevos datos
+    req.session.user = {
+      ...req.session.user,
+      name: updatedUser.name,
+      last_name: updatedUser.last_name,
+      phone: updatedUser.phone,
+      birthdate: updatedUser.birthdate,
+      email: updatedUser.email,
+      rol: updatedUser.rol,
+      id: updatedUser.id,
+    };
+    
+    res.redirect('http://localhost:8080/profile');
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error);
+    res.status(500).json({ success: false, message: 'Error al actualizar usuario' });
+  }
+});
+
+
 router.get('/session', (req, res) => {
   try {
     // Verificar si existe una sesión activa
@@ -135,7 +200,7 @@ router.get('/session', (req, res) => {
 
     // Actualizar último acceso (opcional)
     req.session.lastAccess = new Date();
-    
+
     // Devolver datos de la sesión (sin información sensible como contraseñas)
     const sessionData = {
       success: true,

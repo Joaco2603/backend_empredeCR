@@ -74,14 +74,14 @@ export function renderElectionButtons(cardSelector = '.card', url = '', location
     // Botón Aceptar
     const acceptButton = createActionButton({
       text: 'Aceptar',
-      className: 'accept_btn',
+      className: 'admin-btn button',
       onClick: () => handleElectionAction(card, url, true)
     });
 
     // Botón Rechazar
     const rejectButton = createActionButton({
       text: 'Rechazar',
-      className: 'reject_btn',
+      className: 'admin-btn button',
       onClick: () => handleElectionAction(card, url, false)
     });
 
@@ -104,13 +104,15 @@ async function handleElectionAction(cardElement, url, accepted) {
     cardId = strong ? strong.textContent.trim() : 'unknown';
     cardId = cardId.split(':')[1].trim();
   }
+  console.log(`${url}/activate/${cardId}`);
 
   try {
     const response = await fetch(`${url}/activate/${cardId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ accepted })
+      body: JSON.stringify({ accepted: accepted })
     });
+    console.log(response);
     if (response.ok) {
       cardElement.remove();
     } else {

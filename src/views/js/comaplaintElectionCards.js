@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         { key: 'address', label: 'Ubicación' },
     ];
 
-    await showInformationInCards('/api/report/inactive', 'container_cards', properties, true);
+    await showInformationInCards('/api/report/inactive', 'container_cards', properties, false);
 
     // Obtiene el rol del usuario usando fetch a /api/session
     try {

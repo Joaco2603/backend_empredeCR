@@ -61,11 +61,11 @@ router.post('/:id', async (req, res) => {
   }
 });
 
-// Eliminé la ruta duplicada de update-report
 
 // Ruta para eliminar reportes (borrado lógico) - Versión consolidada
 router.delete('/:id', async (req, res) => {
   try {
+    console.log("dhafjkdshaf")
     const { id } = req.params;
     const report = await Reports.findByIdAndUpdate(id, {
       isActive: false,
@@ -87,7 +87,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Eliminé la ruta duplicada de delete-report
 
 // Ruta para obtener reportes con paginación - Versión optimizada
 router.get('/active', async (req, res) => {
@@ -118,17 +117,52 @@ router.get("/active", async (req, res) => {
 });
 
 
+// router.post('/activate/:id', async (req, res) => {
+//   try {
+
+
+
+//     // 1. Get only active entrepreneurships
+//     const entrepreneurships = await Reports.findByIdAndUpdate(req.params.id,{
+//       isActive: req.body.accepted,
+//     });
+
+//     res.redirect('http://localhost:8080/entrepreneur')
+//     return;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
+
 router.post('/activate/:id', async (req, res) => {
   try {
-    // 1. Get only active entrepreneurships
-    const entrepreneurships = await Reports.findByIdAndUpdate(req.params.id,{
-      isActive: req.body.accepted,
-    });
-
-    res.redirect('http://localhost:8080/entrepreneur')
+    const reportId = req.params.id;
+    const newStatus = req.body.accepted;
+    
+    // Primero obtener el estado actual del reporte
+    const currentReport = await Reports.findById(reportId);
+    
+    if (!currentReport) {
+      return res.status(404).json({ success: false, message: 'Reporte no encontrado' });
+    }
+    
+    // Si se envía false y ya está false, eliminar de la DB
+    if (newStatus === false && currentReport.isActive === false) {
+      await Reports.findByIdAndDelete(reportId);
+      console.log(`Reporte ${reportId} eliminado de la base de datos`);
+    } else {
+      // En cualquier otro caso, solo actualizar el estado
+      await Reports.findByIdAndUpdate(reportId, {
+        isActive: newStatus,
+      });
+      console.log(`Reporte ${reportId} actualizado - isActive: ${newStatus}`);
+    }
+    
+    res.redirect('http://localhost:8080/entrepreneur');
     return;
   } catch (error) {
-    console.log(error);
+    console.log('Error en activate:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 });
 
@@ -149,10 +183,10 @@ router.get('/my_reports', async (req, res) => {
     // 3. Busca reportes del usuario (CORRECCIÓN: usa 'user', no '_id')
     const reports = await Reports.find({
       user: new ObjectId(req.session.user.id),  // ✅ Filtra por ID de usuario
-      isActive: true
     }).populate('user', 'name email');  // Datos específicos
 
-    res.json({ success: true, data: reports });
+
+    res.json(reports);
 
   } catch (error) {
     console.error("Error en /my_reports:", error);

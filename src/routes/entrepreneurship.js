@@ -3,6 +3,9 @@ import Entrepreneurship from "../models/Entrepreneurship.js";
 import multer from "multer";
 import path from "path";
 
+import mongoose from 'mongoose';
+const { ObjectId } = mongoose.Types;
+
 const router = Router();
 
 // Configuración de multer
@@ -125,6 +128,7 @@ router.post("/update/:id", upload.single("img"), async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     // 1. Validate entrepreneurship ID
+    console.log('here')
     const id = req.params.id;
 
     // 2. Delete entrepreneurship function
@@ -182,17 +186,49 @@ router.get("/active", async (req, res) => {
 });
 
 
+// router.post('/activate/:id', async (req, res) => {
+//   try {
+//     // 1. Get only active entrepreneurships
+//     const entrepreneurships = await Entrepreneurship.findByIdAndUpdate(req.params.id,{
+//       isActive: req.body.accepted,
+//     });
+
+//     res.redirect('http://localhost:8080/entrepreneur')
+//     return;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
+
 router.post('/activate/:id', async (req, res) => {
   try {
-    // 1. Get only active entrepreneurships
-    const entrepreneurships = await Entrepreneurship.findByIdAndUpdate(req.params.id,{
-      isActive: req.body.accepted,
-    });
-
-    res.redirect('http://localhost:8080/entrepreneur')
+    const entrepreneurshipId = req.params.id;
+    const newStatus = req.body.accepted;
+    
+    // Primero obtener el estado actual del entrepreneurship
+    const currentEntrepreneurship = await Entrepreneurship.findById(entrepreneurshipId);
+    
+    if (!currentEntrepreneurship) {
+      return res.status(404).json({ success: false, message: 'Emprendimiento no encontrado' });
+    }
+    
+    // Si se envía false y ya está false, eliminar de la DB
+    if (newStatus === false && currentEntrepreneurship.isActive === false) {
+      await Entrepreneurship.findByIdAndDelete(entrepreneurshipId);
+      console.log(`Emprendimiento ${entrepreneurshipId} eliminado de la base de datos`);
+    } else {
+      // En cualquier otro caso, solo actualizar el estado
+      await Entrepreneurship.findByIdAndUpdate(entrepreneurshipId, {
+        isActive: newStatus,
+      });
+      console.log(`Emprendimiento ${entrepreneurshipId} actualizado - isActive: ${newStatus}`);
+    }
+    
+    res.redirect('http://localhost:8080/entrepreneur');
     return;
   } catch (error) {
-    console.log(error);
+    console.log('Error en activate entrepreneurship:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 });
 
@@ -200,9 +236,11 @@ router.post('/activate/:id', async (req, res) => {
 // Get active entrepreneurships route
 router.get("/my_entrepreneurships", async (req, res) => {
   try {
+    const id = req.session.user.id;
+
     // 1. Get only active entrepreneurships
     const entrepreneurships = await Entrepreneurship.find({
-      isActive: true,
+      user: new ObjectId(id), 
     }).populate("user");
 
     // 2. Render active entrepreneurships page

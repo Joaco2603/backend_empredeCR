@@ -26,7 +26,7 @@ router.post('/', async (req, res) => {
 });
 
 // Actualizar transporte
-router.post('/update/:id', async (req, res) => {
+router.post('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -104,7 +104,7 @@ router.get('/active', async (req, res) => {
 });
 
 // Ruta para editar (CON transport)
-router.get('/update', async (req, res) => {
+router.get('/update/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const transport = await Transport.findById(id);
