@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         { key: 'address', label: 'Ubicación' },
     ];
 
-    await showInformationInCards('/api/transport/active', 'container_cards', properties);
+    await showInformationInCards('/api/transport/active', 'container_cards', properties, false);
 
     // Obtiene el rol del usuario usando fetch a /api/session
     try {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (rol === 'ADMIN_ROLE') {
                 import('./changeCardsAdmin.js').then(module => {
                     if (typeof module.renderAdminButtons === 'function') {
-                        module.renderAdminButtons('.card', '/api/transport/active', false);
+                        module.renderAdminButtons('.card', '/api/transport', false);
                     } else if (typeof window.renderAdminButtons === 'function') {
                         window.renderAdminButtons();
                     }

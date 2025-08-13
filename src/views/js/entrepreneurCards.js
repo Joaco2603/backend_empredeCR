@@ -7,10 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         { key: 'description', label: 'Descripción' },
         { key: 'date', label: 'Fecha' },
         { key: 'address', label: 'Ubicación' },
-        { key: 'createdAt', label: 'Creada' }
     ];
 
-    await showInformationInCards('/api/report/active', 'container_cards', properties, false);
+    await showInformationInCards('/api/entrepreneurship/active', 'container_cards', properties, true);
 
     // Obtiene el rol del usuario usando fetch a /api/session
     try {
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (rol === 'ADMIN_ROLE') {
                 import('./changeCardsAdmin.js').then(module => {
                     if (typeof module.renderAdminButtons === 'function') {
-                        module.renderAdminButtons('.card', '/api/report', false);
+                        module.renderAdminButtons('.card', '/api/entrepreneurship');
                     } else if (typeof window.renderAdminButtons === 'function') {
                         window.renderAdminButtons();
                     }

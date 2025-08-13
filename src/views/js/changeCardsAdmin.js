@@ -19,12 +19,6 @@ export function renderAdminButtons(cardSelector = '.card', url = '', showImage =
     // Verificar si ya tiene botones para evitar duplicados
     if (card.querySelector('.card_buttons')) return;
 
-    // Si showImage es false, elimina la imagen de la card si existe
-    if (!showImage) {
-      const img = card.querySelector('img');
-      if (img) img.remove();
-    }
-
     // Crear contenedor para los botones
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'card_buttons';

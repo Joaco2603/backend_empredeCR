@@ -19,7 +19,7 @@ const upload = multer({ storage });
 
 // Create entrepreneurship route
 router.post(
-  "/create-entrepreneurship",
+  "/",
   upload.single("img"),
   async (req, res) => {
     try {
@@ -62,7 +62,7 @@ router.post(
 );
 
 // Update entrepreneurship route
-router.put("/update-entrepreneurship", async (req, res) => {
+router.put("/", async (req, res) => {
   try {
     // 1. Validate entrepreneurship data
     const {
@@ -113,7 +113,7 @@ router.put("/update-entrepreneurship", async (req, res) => {
 });
 
 // Delete entrepreneurship route
-router.delete("/delete-entrepreneurship", async (req, res) => {
+router.delete("/", async (req, res) => {
   try {
     // 1. Validate entrepreneurship ID
     const { id } = req.body;
@@ -147,7 +147,7 @@ router.delete("/delete-entrepreneurship", async (req, res) => {
 });
 
 // Get all entrepreneurships route
-router.get("/entrepreneurships", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     // 1. Get all entrepreneurships
     const entrepreneurships = await Entrepreneurship.find({}).populate("user");
@@ -166,8 +166,44 @@ router.get("/entrepreneurships", async (req, res) => {
   }
 });
 
+
+// Get active entrepreneurships route
+router.get("/active", async (req, res) => {
+  try {
+    // 1. Get only active entrepreneurships
+    const entrepreneurships = await Entrepreneurship.find({
+      isActive: true,
+    }).populate("user");
+
+    res.json(entrepreneurships);
+    return;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
+// Get active entrepreneurships route
+router.get("/my_entrepreneurships", async (req, res) => {
+  try {
+    // 1. Get only active entrepreneurships
+    const entrepreneurships = await Entrepreneurship.find({
+      isActive: true,
+    }).populate("user");
+
+    // 2. Render active entrepreneurships page
+    res.json(entrepreneurships);
+  } catch (error) {
+    res.render("active-entrepreneurships", {
+      error: "Error al cargar los emprendimientos activos",
+      entrepreneurships: [],
+      user: req.user,
+    });
+  }
+});
+
 // Get entrepreneurship by ID route
-router.get("/entrepreneurship/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     // 1. Get entrepreneurship by ID
     const entrepreneurship = await Entrepreneurship.findById(
@@ -192,49 +228,7 @@ router.get("/entrepreneurship/:id", async (req, res) => {
   }
 });
 
-// Get active entrepreneurships route
-router.get("/active-entrepreneurships", async (req, res) => {
-  try {
-    // 1. Get only active entrepreneurships
-    const entrepreneurships = await Entrepreneurship.find({
-      isActive: true,
-    }).populate("user");
 
-    // 2. Render active entrepreneurships page
-    res.render("active-entrepreneurships", {
-      entrepreneurships,
-      user: req.user,
-    });
-  } catch (error) {
-    res.render("active-entrepreneurships", {
-      error: "Error al cargar los emprendimientos activos",
-      entrepreneurships: [],
-      user: req.user,
-    });
-  }
-});
 
-// Get entrepreneurships by user route
-router.get("/user-entrepreneurships/:userId", async (req, res) => {
-  try {
-    // 1. Get entrepreneurships by user ID
-    const entrepreneurships = await Entrepreneurship.find({
-      user: req.params.userId,
-      isActive: true,
-    }).populate("user");
-
-    // 2. Render user entrepreneurships page
-    res.render("user-entrepreneurships", {
-      entrepreneurships,
-      user: req.user,
-    });
-  } catch (error) {
-    res.render("user-entrepreneurships", {
-      error: "Error al cargar los emprendimientos del usuario",
-      entrepreneurships: [],
-      user: req.user,
-    });
-  }
-});
 
 export default router;

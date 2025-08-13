@@ -3,8 +3,9 @@
  * @param {string} url - Endpoint de donde obtener los datos (debe devolver un array de objetos).
  * @param {string} containerId - ID del elemento donde se insertarán las cards.
  * @param {Object[]} cardPropertiesObject - Array de objetos { key: 'propiedadDB', label: 'Etiqueta en español' }
+ * @param {boolean} showImage - Si es false, no muestra imágenes en la card (default: true)
  */
-export async function showInformationInCards(url, containerId, cardPropertiesObject = []) {
+export async function showInformationInCards(url, containerId, cardPropertiesObject = [], showImage = true) {
     try {
         const response = await fetch(url, { credentials: 'include' });
         if (!response.ok) throw new Error('Error al obtener los datos');
@@ -42,7 +43,7 @@ export async function showInformationInCards(url, containerId, cardPropertiesObj
             });
 
             card.innerHTML = `
-                <img src="${imgSrc}" alt="Imagen de la card" />
+                ${showImage ? `<img src="${imgSrc}" alt="Imagen de la card" />` : ''}
                 <div class="card-content">
                   <h3>${title}</h3>
                   ${propertiesHtml}

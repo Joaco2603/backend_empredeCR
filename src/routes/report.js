@@ -1,80 +1,15 @@
 import { Router } from "express";
-import mongoose from "mongoose"; // Añadido import de mongoose
 import Reports from "../models/Reports.js";
+
+import mongoose from 'mongoose';
+const { ObjectId } = mongoose.Types;
 
 const router = Router();
 
-// Helper mejorado para manejar errores
-const handleError = (res, error, status = 500, defaultMessage = 'Error en el servidor') => {
-  console.error('Error:', error);
-  return res.status(status).json({
-    success: false,
-    message: error.message || defaultMessage,
-    error: process.env.NODE_ENV === 'development' ? {
-      stack: error.stack,
-      details: error.details || null
-    } : undefined
-  });
-};
-
-// Middleware para validar ObjectIds
-const validateObjectId = (req, res, next) => {
-  if (req.params.id && !mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return handleError(res, new Error('ID no válido'), 400);
-  }
-  next();
-};
-
-// Middleware mejorado para validación de campos
-const validateReportFields = (req, res, next) => {
-  const requiredFields = {
-    name: 'Título del reporte',
-    description: 'Descripción',
-    date: 'Fecha',
-    address: 'Dirección',
-    user: 'ID de usuario'
-  };
-  
-  const missingFields = [];
-  const invalidFields = [];
-
-  // Verificar campos faltantes
-  for (const [field, description] of Object.entries(requiredFields)) {
-    if (!req.body[field]) {
-      missingFields.push(description);
-    }
-  }
-
-  // Validación específica para la fecha
-  if (req.body.date && isNaN(new Date(req.body.date).getTime())) {
-    invalidFields.push('Fecha con formato inválido');
-  }
-
-  // Validar que el user ID tenga formato válido para ObjectId
-  if (req.body.user && !mongoose.Types.ObjectId.isValid(req.body.user)) {
-    invalidFields.push('ID de usuario no válido');
-  }
-
-  if (missingFields.length > 0 || invalidFields.length > 0) {
-    return res.status(400).json({
-      success: false,
-      message: 'Error de validación',
-      errors: {
-        missingFields,
-        invalidFields
-      }
-    });
-  }
-
-  next();
-};
-
 // Ruta para crear reportes - Versión optimizada y corregida
-router.post('/', validateReportFields, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { name, description, date, address, type = 'others' } = req.body;
-
-    console.log(req.session.user.id);
 
     const reportData = {
       name,
@@ -89,30 +24,15 @@ router.post('/', validateReportFields, async (req, res) => {
 
     const report = await Reports.create(reportData);
 
-    res.status(201).json({
-      success: true,
-      data: {
-        id: report._id,
-        name: report.name,
-        type: report.type,
-        date: report.date
-      },
-      message: 'Reporte creado exitosamente',
-      redirect: '/complaint',
-      timestamp: new Date()
-    });
-
+    res.redirect('http://localhost:8080/complaint');
+    return
   } catch (error) {
-    error.details = {
-      body: req.body,
-      errorType: 'DatabaseError'
-    };
-    handleError(res, error, 500, 'Error al guardar el reporte en la base de datos');
+    console.log(error);
   }
 });
 
 // Ruta para actualizar reportes - Versión consolidada
-router.put('/update-report/:id', validateObjectId, async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updates = {
@@ -146,14 +66,14 @@ router.put('/update-report/:id', validateObjectId, async (req, res) => {
     });
 
   } catch (error) {
-    handleError(res, error, 500, 'Error al actualizar el reporte');
+    console.log(error);
   }
 });
 
 // Eliminé la ruta duplicada de update-report
 
 // Ruta para eliminar reportes (borrado lógico) - Versión consolidada
-router.delete('/delete-report/:id', validateObjectId, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const report = await Reports.findByIdAndUpdate(id, {
@@ -172,80 +92,55 @@ router.delete('/delete-report/:id', validateObjectId, async (req, res) => {
     });
 
   } catch (error) {
-    handleError(res, error, 500, 'Error al desactivar el reporte');
+    console.log(error);
   }
 });
 
 // Eliminé la ruta duplicada de delete-report
 
 // Ruta para obtener reportes con paginación - Versión optimizada
-router.get('/reports', async (req, res) => {
+router.get('/active', async (req, res) => {
   try {
-    const { 
-      page = 1, 
-      limit = 10, 
-      active,
-      userId,
-      type,
-      startDate,
-      endDate
-    } = req.query;
+    // Busca todos los reportes activos sin paginación
+    const report = await Reports.find({isActive: true});
 
-    const query = {};
-
-    if (active !== undefined) {
-      query.isActive = active === 'true';
-    }
-
-    if (userId) {
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return handleError(res, new Error('ID de usuario no válido'), 400);
-      }
-      query.user = userId;
-    }
-
-    if (type) {
-      query.type = type;
-    }
-
-    if (startDate && endDate) {
-      query.date = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
-      };
-    }
-
-    const options = {
-      page: parseInt(page),
-      limit: parseInt(limit),
-      sort: { createdAt: -1 },
-      populate: 'user'
-    };
-
-    const reports = await Reports.paginate(query, options);
-
-    res.json({
-      success: true,
-      data: reports.docs,
-      pagination: {
-        total: reports.totalDocs,
-        pages: reports.totalPages,
-        page: reports.page,
-        limit: reports.limit,
-        hasNext: reports.hasNextPage,
-        hasPrev: reports.hasPrevPage
-      }
-    });
+    res.json(report);
 
   } catch (error) {
-    handleError(res, error, 500, 'Error al obtener los reportes');
+    console.log(error)
   }
 });
 
-// Eliminé las rutas redundantes (/active-reports, /user-reports/:userId, /reports-by-date)
+
+router.get('/my_reports', async (req, res) => {
+  try {
+    console.log(req.session.user.id)
+    // 1. Verifica autenticación
+    if (!req.session?.user?.id) {
+      return res.status(401).json({ error: "Usuario no autenticado" });
+    }
+
+    // 2. Valida que el ID de usuario sea un ObjectId válido
+    if (!ObjectId.isValid(req.session.user.id)) {
+      return res.status(400).json({ error: "ID de usuario no válido" });
+    }
+
+    // 3. Busca reportes del usuario (CORRECCIÓN: usa 'user', no '_id')
+    const reports = await Reports.find({
+      user: new ObjectId(req.session.user.id),  // ✅ Filtra por ID de usuario
+      isActive: true
+    }).populate('user', 'name email');  // Datos específicos
+
+    res.json({ success: true, data: reports });
+
+  } catch (error) {
+    console.error("Error en /my_reports:", error);
+    res.status(500).json({ error: "Error al cargar reportes" });
+  }
+});
 
 // Ruta para obtener un reporte específico
-router.get('/report/:id', validateObjectId, async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const report = await Reports.findById(req.params.id).populate('user');
     
@@ -258,7 +153,7 @@ router.get('/report/:id', validateObjectId, async (req, res) => {
       data: report
     });
   } catch (error) {
-    handleError(res, error, 500, 'Error al obtener el reporte');
+    console.log(error)
   }
 });
 
