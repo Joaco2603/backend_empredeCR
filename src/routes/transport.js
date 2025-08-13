@@ -1,11 +1,10 @@
 import { Router } from "express";
 import Transport from "../models/Transport.js";
 
-  const router = Router();
+const router = Router();
 
 // Crear transporte
 router.post('/', async (req, res) => {
-  console.log(req.body)
   try {
     const transport = await Transport.create({
       name: req.body.name,
@@ -19,26 +18,28 @@ router.post('/', async (req, res) => {
     res.redirect('http://localhost:8080/transport')
   } catch (error) {
     console.log(error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error en el servidor' 
+      message: 'Error en el servidor'
     });
   }
 });
 
 // Actualizar transporte
-router.put('/:id', async (req, res) => {
+router.post('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, address, isActive } = req.body;
 
-    const transport = await Transport.findByIdAndUpdate(id, {
-      name,
-      description,
-      price,
-      address,
-      isActive
-    }, { new: true });
+    const updateData = {
+      name: req.body.name !== undefined ? req.body.name : null,
+      phone: req.body.contact !== undefined ? req.body.contact : null,
+      schedules: req.body.schedules !== undefined ? req.body.schedules : null,
+      address: req.body.address !== undefined ? req.body.address : null,
+      price: req.body.price !== undefined ? req.body.price : null,
+      isActive: req.body.hasOwnProperty('isActive') ? true : false
+    };
+
+    const transport = await Transport.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!transport) {
       return res.status(404).json({
@@ -46,12 +47,8 @@ router.put('/:id', async (req, res) => {
         message: 'Transporte no encontrado'
       });
     }
-    
-    res.json({ 
-      success: true, 
-      message: 'Transporte actualizado con éxito',
-      data: transport
-    });
+
+    res.redirect('http://localhost:8080/transport');
   } catch (error) {
     console.error('Error al actualizar transporte:', error);
     res.status(500).json({
@@ -74,9 +71,9 @@ router.delete('/:id', async (req, res) => {
         message: 'Transporte no encontrado'
       });
     }
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       message: 'Transporte eliminado con éxito'
     });
   } catch (error) {
@@ -93,7 +90,7 @@ router.delete('/:id', async (req, res) => {
 router.get('/active', async (req, res) => {
   try {
     const transports = await Transport.find({ isActive: true });
-    
+
 
     res.json(transports);
   } catch (error) {
@@ -106,27 +103,19 @@ router.get('/active', async (req, res) => {
   }
 });
 
-
-// Obtener transporte por ID
-router.get('/:id', async (req, res) => {
+// Ruta para editar (CON transport)
+router.get('/update/:id', async (req, res) => {
   try {
-    const transport = await Transport.findById(req.params.id);
+    const { id } = req.params;
+    const transport = await Transport.findById(id);
+    transport.contact = transport.phone;
     if (!transport) {
-      return res.status(404).json({
-        success: false,
-        message: 'Transporte no encontrado'
-      });
+      return res.status(404).send('Transporte no encontrado');
     }
-
-    res.json(transport);
-    return;
+    res.render('transportForm', { transport });
   } catch (error) {
-    console.error('Error al obtener transporte:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error al cargar el transporte',
-      error: error.message
-    });
+    console.error(error);
+    res.status(500).send('Error del servidor');
   }
 });
 

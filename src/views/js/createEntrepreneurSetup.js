@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', async() => {
     renderRoleBasedContent({
     roleRequired: ['ENTREPRENEUR_ROLE'],
     containerClass: 'creation_div',
-    html: ``,
+    html: `
+    <button class="">Emprender<button/>
+    `,
     buttonText: 'Crear emprendimiento',
     buttonHref: 'entrepreneurForm',
   });

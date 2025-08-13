@@ -15,7 +15,8 @@
 
 <body>
   <div class="div_center">
-    <form class="form" id="form" method="POST" action="/api/transport">
+    <form class="form" id="form" method="POST"
+      action="<%= typeof transport !== 'undefined' && transport ? `/api/transport/${transport._id}` : '/api/transport' %>">
       <div class="div_sub_container_form">
         <a href="/transport" class="button_back">
           <div class="button_back_box">
@@ -35,35 +36,44 @@
             </span>
           </div>
         </a>
-        <p class="title">Crear horario de transporte</p>
+        <p class="title">
+          <%= typeof transport !=='undefined' && transport ? 'Editar' : 'Crear' %> horario de transporte
+        </p>
       </div>
 
       <label>
-        <input name="name" required type="text" class="input" />
+        <input name="name" required type="text" class="input"
+          value="<%= typeof transport !== 'undefined' && transport ? transport.name : '' %>" />
         <span>Nombre de la parada</span>
       </label>
 
       <label>
-        <input name="contact" required type="number" class="input" />
+        <input name="contact" required type="number" class="input"
+          value="<%= typeof transport !== 'undefined' && transport ? transport.contact : '' %>" />
         <span>Contacto</span>
       </label>
 
       <label>
-        <input name="schedules" required type="text" class="input" />
+        <input name="schedules" required type="text" class="input"
+          value="<%= typeof transport !== 'undefined' && transport ? transport.schedules : '' %>" />
         <span>Horarios</span>
       </label>
 
       <label>
-        <input name="address" required type="text" class="input" />
+        <input name="address" required type="text" class="input"
+          value="<%= typeof transport !== 'undefined' && transport ? transport.address : '' %>" />
         <span>Ubicación</span>
       </label>
 
       <label>
-        <input name="price" required type="number" class="input" />
+        <input name="price" required type="number" class="input"
+          value="<%= typeof transport !== 'undefined' && transport ? transport.price : '' %>" />
         <span>Precio</span>
       </label>
 
-      <button type="submit" class="button button_color_primary">Crear horario</button>
+      <button type="submit" class="button button_color_primary">
+        <%= typeof transport !=='undefined' && transport ? 'Actualizar' : 'Crear' %> horario
+      </button>
     </form>
   </div>
 
