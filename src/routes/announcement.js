@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from 'multer';
 import Announcement from "../models/Announcement.js";
 
-const upload = multer({ 
+const upload = multer({
   dest: 'uploads/' // Directorio temporal para archivos subidos
 });
 
@@ -40,43 +40,46 @@ router.post('/', upload.single('img'), async (req, res) => {
 
 
 // Update announcement route
-router.put('/', async (req, res) => {
+router.post('/update/:id', upload.single('img'), async (req, res) => {
   try {
+    const id = req.params.id;
     // 1. Validate announcement data
-    const { id, name, description, date, address, organizer, type, isActive, ...extraData } = req.body;
+    const { name, description, date, address, organizer, type, isActive, ...extraData } = req.body;
 
-    // 2. Update announcement function
-    const announcement = await Announcement.findByIdAndUpdate(id, {
-      name,
-      description,
-      date,
-      address,
-      organizer,
-      type,
-      isActive
-    }, { new: true });
+    // 2. Prepara los datos a actualizar
+    const updateData = {
+      name: name !== undefined ? name : undefined,
+      description: description !== undefined ? description : undefined,
+      date: date !== undefined ? date : undefined,
+      address: address !== undefined ? address : undefined,
+      organizer: organizer !== undefined ? address : undefined,
+      type: type !== undefined ? type : undefined,
+      isActive: true
+    };
+
+    // Si se subió una nueva imagen, actualiza la propiedad img
+    if (req.file) {
+      updateData.img = `/uploads/${req.file.filename}`;
+    }
+
+    // 3. Update announcement function
+    const announcement = await Announcement.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!announcement) {
       throw new Error('Anuncio no encontrado');
     }
 
-    // 3. Set session data if needed
+    // 4. Set session data if needed
     if (req.session.user) {
       req.session.user.lastAnnouncementUpdated = announcement.id;
     }
 
-    // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || '/dashboard';
-    delete req.session.returnTo;
-
-    res.redirect(redirectTo);
+    res.redirect('http://localhost:8080/advertisement');
   } catch (error) {
-    res.render('announcement', {
-      error: 'Error al actualizar el anuncio',
-      formData: req.body
-    });
+    console.log(error);
   }
 });
+
 
 // Delete announcement route
 router.delete('/:id', async (req, res) => {
@@ -142,53 +145,21 @@ router.get('/active', async (req, res) => {
   }
 });
 
-
-// Get announcements by organizer route
-router.get('/organizer-announcements/:organizerId', async (req, res) => {
+// Ruta para editar (CON transport)
+router.get('/update/:id', async (req, res) => {
   try {
-    // 1. Get announcements by organizer ID
-    const announcements = await Announcement.find({
-      organizer: req.params.organizerId,
-      isActive: true
-    }).populate('organizer');
+    const { id } = req.params;
+    const announcement = await Announcement.findById(id);
 
-    // 2. Render organizer announcements page
-    res.render('organizer-announcements', {
-      announcements,
-      user: req.user
-    });
+    if (!announcement) {
+      return res.status(404).send('Anuncio no encontrado');
+    }
+    res.render('advertisementForm', { announcement });
   } catch (error) {
-    res.render('organizer-announcements', {
-      error: 'Error al cargar los anuncios del organizador',
-      announcements: [],
-      user: req.user
-    });
+    console.error(error);
+    res.status(500).send('Error del servidor');
   }
 });
 
-// Get announcements by type route
-router.get('/announcements-by-type/:type', async (req, res) => {
-  try {
-    // 1. Get announcements by type
-    const announcements = await Announcement.find({
-      type: req.params.type,
-      isActive: true
-    }).populate('organizer');
-
-    // 2. Render announcements by type page
-    res.render('announcements-by-type', {
-      announcements,
-      type: req.params.type,
-      user: req.user
-    });
-  } catch (error) {
-    res.render('announcements-by-type', {
-      error: 'Error al cargar los anuncios por tipo',
-      announcements: [],
-      type: req.params.type,
-      user: req.user
-    });
-  }
-});
 
 export default router;

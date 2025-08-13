@@ -42,6 +42,8 @@ router.post(
         isActive: false,
       });
 
+      console.log(entrepreneurship)
+
       // 4. Set session data if needed
       if (req.session.user) {
         req.session.user.lastEntrepreneurshipCreated = entrepreneurship.id;
@@ -51,7 +53,7 @@ router.post(
       const redirectTo = req.session.returnTo || "/dashboard";
       delete req.session.returnTo;
 
-      res.redirect(redirectTo);
+      res.redirect('http://localhost:8080/entrepreneur');
     } catch (error) {
       res.render("entrepreneurship", {
         error: "Error al crear el emprendimiento",
@@ -62,7 +64,7 @@ router.post(
 );
 
 // Update entrepreneurship route
-router.put("/", async (req, res) => {
+router.put("/update/:id", async (req, res) => {
   try {
     // 1. Validate entrepreneurship data
     const {
@@ -113,10 +115,10 @@ router.put("/", async (req, res) => {
 });
 
 // Delete entrepreneurship route
-router.delete("/", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     // 1. Validate entrepreneurship ID
-    const { id } = req.body;
+    const id = req.params.id;
 
     // 2. Delete entrepreneurship function
     const entrepreneurship = await Entrepreneurship.findByIdAndDelete(id);
@@ -134,10 +136,7 @@ router.delete("/", async (req, res) => {
     }
 
     // 4. Redirect or send response
-    const redirectTo = req.session.returnTo || "/dashboard";
-    delete req.session.returnTo;
-
-    res.redirect(redirectTo);
+    res.redirect("hthttp://localhost:8080/entrepreneur");
   } catch (error) {
     res.render("entrepreneurship", {
       error: "Error al eliminar el emprendimiento",

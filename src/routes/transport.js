@@ -31,11 +31,11 @@ router.post('/:id', async (req, res) => {
     const { id } = req.params;
 
     const updateData = {
-      name: req.body.name !== undefined ? req.body.name : null,
-      phone: req.body.contact !== undefined ? req.body.contact : null,
-      schedules: req.body.schedules !== undefined ? req.body.schedules : null,
-      address: req.body.address !== undefined ? req.body.address : null,
-      price: req.body.price !== undefined ? req.body.price : null,
+      name: req.body.name !== undefined ? req.body.name : undefined,
+      phone: req.body.contact !== undefined ? req.body.contact : undefined,
+      schedules: req.body.schedules !== undefined ? req.body.schedules : undefined,
+      address: req.body.address !== undefined ? req.body.address : undefined,
+      price: req.body.price !== undefined ? req.body.price : undefined,
       isActive: true
     };
 
