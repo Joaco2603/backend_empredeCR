@@ -182,6 +182,21 @@ router.get("/active", async (req, res) => {
 });
 
 
+router.post('/activate/:id', async (req, res) => {
+  try {
+    // 1. Get only active entrepreneurships
+    const entrepreneurships = await Entrepreneurship.findByIdAndUpdate(req.params.id,{
+      isActive: req.body.accepted,
+    });
+
+    res.redirect('http://localhost:8080/entrepreneur')
+    return;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
 // Get active entrepreneurships route
 router.get("/my_entrepreneurships", async (req, res) => {
   try {

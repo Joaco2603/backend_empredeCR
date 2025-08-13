@@ -19,14 +19,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const rol = session?.user?.rol;
             if (rol === 'ADMIN_ROLE') {
                 import('./changeCardsAdmin.js').then(module => {
-                    if (typeof module.renderAdminButtons === 'function') {
-                        module.renderAdminButtons('.card', '/api/entrepreneurship', '/api/entrepreneurship/');
-                    } else if (typeof window.renderAdminButtons === 'function') {
-                        window.renderAdminButtons();
+                    if (typeof module.renderElectionButtons === 'function') {
+                        module.renderElectionButtons('.card', '/api/entrepreneurship', '/api/entrepreneurship/activate/');
+                    } else if (typeof window.renderElectionButtons === 'function') {
+                        window.renderElectionButtons();
                     }
                 }).catch(() => {
-                    if (typeof window.renderAdminButtons === 'function') {
-                        window.renderAdminButtons();
+                    if (typeof window.renderElectionButtons === 'function') {
+                        window.renderElectionButtons();
                     }
                 });
             }

@@ -136,11 +136,13 @@ router.get('/session', (req, res) => {
       user: {
         id: req.session.user.id,
         name: req.session.user.name || req.session.user.nombre,
+        last_name: req.session.user.last_name || req.session.user.apellido,
+        phone: req.session.user.phone || req.session.user.telefono,
+        birthdate: req.session.user.birthdate || req.session.user.fecha_nacimiento,
         email: req.session.user.email || req.session.user.correo,
         rol: req.session.user.rol || req.session.user.role,
         // Agregar otros campos que necesites, excluyendo datos sensibles
         estado: req.session.user.estado,
-        google: req.session.user.google,
         img: req.session.user.img
       },
       session: {
