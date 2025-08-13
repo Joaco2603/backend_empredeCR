@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async() => {
     roleRequired: ['ENTREPRENEUR_ROLE'],
     containerClass: 'creation_div',
     html: `
-    <button class="">Emprender<button/>
+    <a href="entrepreneurMyCards" class="button button_primary">Mis emprendimientos<a/>
     `,
     buttonText: 'Crear emprendimiento',
     buttonHref: 'entrepreneurForm',

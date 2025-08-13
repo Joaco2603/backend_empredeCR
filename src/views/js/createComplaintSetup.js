@@ -45,7 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderRoleBasedContent({
       roleRequired: ['CITIZEN_ROLE', 'ENTREPRENEUR_ROLE'],
       containerClass: 'creation_div',
-      html: '',
+      html: `
+    <a href="complaintMyCards" class="button button_primary">Mis quejas<a/>
+    `,
       buttonText: 'Crear queja',
       buttonHref: 'complaintForm',
     });

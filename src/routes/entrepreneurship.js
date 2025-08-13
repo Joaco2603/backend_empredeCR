@@ -24,7 +24,7 @@ router.post(
   async (req, res) => {
     try {
       // 1. Validate entrepreneurship data
-      const { name, description, phone, address, user, type_entrepreneur } =
+      const { name, description, phone, address, type_entrepreneur } =
         req.body;
 
       // 2. Obtener la ruta de la imagen subida
@@ -36,7 +36,6 @@ router.post(
         description,
         phone,
         address,
-        type_entrepreneur,
         user: req.session.user.id,
         img: imgPath,
         isActive: false,
@@ -64,31 +63,38 @@ router.post(
 );
 
 // Update entrepreneurship route
-router.put("/update/:id", async (req, res) => {
+router.post("/update/:id", upload.single("img"), async (req, res) => {
   try {
+    const id = req.params.id;
     // 1. Validate entrepreneurship data
     const {
-      id,
       name,
       description,
       phone,
       address,
       user,
       isActive,
-      ...extraData
     } = req.body;
 
-    // 2. Update entrepreneurship function
+    // 2. Prepara los datos a actualizar
+    const updateData = {
+      name,
+      description,
+      phone,
+      address,
+      user,
+      isActive,
+    };
+
+    // Si se subió una nueva imagen, actualiza la propiedad img
+    if (req.file) {
+      updateData.img = req.file.path;
+    }
+
+    // 3. Update entrepreneurship function
     const entrepreneurship = await Entrepreneurship.findByIdAndUpdate(
       id,
-      {
-        name,
-        description,
-        phone,
-        address,
-        user,
-        isActive,
-      },
+      updateData,
       { new: true },
     );
 
@@ -96,17 +102,18 @@ router.put("/update/:id", async (req, res) => {
       throw new Error("Emprendimiento no encontrado");
     }
 
-    // 3. Set session data if needed
+    // 4. Set session data if needed
     if (req.session.user) {
       req.session.user.lastEntrepreneurshipUpdated = entrepreneurship.id;
     }
 
-    // 4. Redirect or send response
+    // 5. Redirect or send response
     const redirectTo = req.session.returnTo || "/dashboard";
     delete req.session.returnTo;
 
     res.redirect(redirectTo);
   } catch (error) {
+    console.log(error);
     res.render("entrepreneurship", {
       error: "Error al actualizar el emprendimiento",
       formData: req.body,
@@ -146,22 +153,15 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Get all entrepreneurships route
-router.get("/", async (req, res) => {
+router.get("/inactive", async (req, res) => {
   try {
     // 1. Get all entrepreneurships
-    const entrepreneurships = await Entrepreneurship.find({}).populate("user");
+    const entrepreneurships = await Entrepreneurship.find({ isActive: false }).populate("user");
 
     // 2. Render entrepreneurships page
-    res.render("entrepreneurships", {
-      entrepreneurships,
-      user: req.user,
-    });
+    res.json(entrepreneurships);
   } catch (error) {
-    res.render("entrepreneurships", {
-      error: "Error al cargar los emprendimientos",
-      entrepreneurships: [],
-      user: req.user,
-    });
+    console.log(error);
   }
 });
 
@@ -193,11 +193,7 @@ router.get("/my_entrepreneurships", async (req, res) => {
     // 2. Render active entrepreneurships page
     res.json(entrepreneurships);
   } catch (error) {
-    res.render("active-entrepreneurships", {
-      error: "Error al cargar los emprendimientos activos",
-      entrepreneurships: [],
-      user: req.user,
-    });
+    console.log(error)
   }
 });
 
@@ -207,23 +203,16 @@ router.get("/:id", async (req, res) => {
     // 1. Get entrepreneurship by ID
     const entrepreneurship = await Entrepreneurship.findById(
       req.params.id,
-    ).populate("user");
+    )
 
     if (!entrepreneurship) {
       throw new Error("Emprendimiento no encontrado");
     }
 
     // 2. Render entrepreneurship detail page
-    res.render("entrepreneurship-detail", {
-      entrepreneurship,
-      user: req.user,
-    });
+    res.render('entrepreneurForm', { entrepreneurship });
   } catch (error) {
-    res.render("entrepreneurship-detail", {
-      error: "Error al cargar el emprendimiento",
-      entrepreneurship: null,
-      user: req.user,
-    });
+    console.log(error);
   }
 });
 

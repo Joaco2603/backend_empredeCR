@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         { key: 'address', label: 'Ubicación' },
     ];
 
-    await showInformationInCards('/api/entrepreneurship/active', 'container_cards', properties, true);
+    await showInformationInCards('/api/entrepreneurship/my_entrepreneurships', 'container_cards', properties, true);
 
     // Obtiene el rol del usuario usando fetch a /api/session
     try {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (rol === 'ADMIN_ROLE') {
                 import('./changeCardsAdmin.js').then(module => {
                     if (typeof module.renderAdminButtons === 'function') {
-                        module.renderAdminButtons('.card', '/api/entrepreneurship', '/api/entrepreneurship/');
+                        module.renderAdminButtons('.card', '/api/entrepreneurship', '/api/entrepreneurship/update');
                     } else if (typeof window.renderAdminButtons === 'function') {
                         window.renderAdminButtons();
                     }
@@ -36,4 +36,3 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error obteniendo la sesión:', error);
     }
 });
-
