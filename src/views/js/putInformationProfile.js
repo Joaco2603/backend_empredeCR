@@ -23,24 +23,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Card de usuario
     const userInfoPs = document.querySelectorAll('.div_user_info p');
-    if (userInfoPs.length >= 4) {
-        userInfoPs[0].innerHTML = `<strong>Nombre:</strong> ${session.user.name || ''}`;
-        userInfoPs[3].innerHTML = `<strong>Apellido:</strong> ${session.user.last_name || ''}`;
-        userInfoPs[1].innerHTML = `<strong>Correo:</strong> ${session.user.email || ''}`;
-        userInfoPs[2].innerHTML = `<strong>Telefono:</strong> ${session.user.phone || ''}`;
-    }
+
+    userInfoPs[0].innerHTML = `<strong>Nombre:</strong> ${session.user.name || ''}`;
+    userInfoPs[1].innerHTML = `<strong>Apellido:</strong> ${session.user.last_name || ''}`;
+    userInfoPs[2].innerHTML = `<strong>Correo:</strong> ${session.user.email || ''}`;
+    userInfoPs[3].innerHTML = `<strong>Correo:</strong> ${session.user.rol || ''}`;
+    // userInfoPs[3].innerHTML = `<strong>Telefono:</strong> ${session.user.rol || ''}`;
+
     const dateInput = document.querySelector('.div_user_info input[type="date"]');
     if (dateInput && session.user.birthdate) {
         dateInput.value = session.user.birthdate.slice(0, 10);
     }
 
-    console.log(userInfoPs[3])
-
     // Formulario editable
     document.getElementById('name').value = session.user.name || '';
     document.getElementById('last_name').value = session.user.last_name || '';
     document.getElementById('email').value = session.user.email || '';
-    document.getElementById('phone').value = session.user.phone || '';
+    document.getElementById('date').value = session.user.birthdate || ''
     // Si tienes birthdate en el formulario:
     const formDateInput = document.querySelector('.form_user_profile input[type="date"]');
     if (formDateInput && session.user.birthdate) {

@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         { key: '_id', label: 'ID' },
         { key: 'name', label: 'Nombre' },
         { key: 'description', label: 'Descripción' },
-        { key: 'date', label: 'Fecha' },
         { key: 'address', label: 'Ubicación' },
     ];
 

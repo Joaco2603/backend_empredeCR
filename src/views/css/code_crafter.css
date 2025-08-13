@@ -1,0 +1,689 @@
+html{
+    scroll-behavior: smooth;
+}
+
+/* Basic Reset & Body Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif; /* Or a more modern sans-serif font */
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Header/Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px; /* Adjust padding as needed */
+    background-color: #000;
+    width: 100%;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 30px; /* Adjust logo height */
+    margin-right: 10px;
+}
+
+.logo span {
+    font-weight: bold;
+    font-size: 1.2em; /* Adjust logo text size */
+    color: #fff;
+}
+
+.nav-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px; /* Space between menu items */
+}
+
+.nav-menu ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1em;
+    transition: color 0.3s ease;
+}
+
+.nav-menu ul li a:hover {
+    color: #ccc; /* Lighter color on hover */
+}
+
+/* Hero Section */
+.hero-section {
+    display: flex;
+    flex-direction: column; /* Stack content and image vertically */
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 70px); /* Adjust based on header height, or set a fixed height */
+    text-align: center;
+    position: relative; /* For background image positioning */
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('background-code-image.jpg'); /* Your background image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.2; /* Adjust opacity of the background image */
+    z-index: -1; /* Send behind content */
+}
+
+.hero-content {
+    max-width: 800px; 
+    margin-top: 300px;
+    padding: 0 20px;
+    z-index: 1; /* Ensure content is above background */
+}
+
+.hero-content h1 {
+    font-size: 4em; /* Adjust main heading size */
+    margin-bottom: 20px;
+    line-height: 1.1;
+    color: #fff;
+}
+
+.hero-content p {
+    font-size: 1.2em;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    color: #ccc; /* Slightly lighter text for body */
+}
+
+.call-to-action {
+    background-color: transparent; /* Transparent background */
+    color: #fff;
+    border: 1px solid #fff; /* White bordera */
+    padding: 12px 30px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 100px;
+}
+
+.call-to-action:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+/* Chatbot Button */
+.chatbot-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100; /* Ensure it's on top */
+}
+
+.chatbot-button button {
+    background-color: #333; /* Darker background for the button */
+    color: #fff;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 30px; /* Rounded button */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+.chatbot-button button:hover {
+    background-color: #555;
+}
+
+/* Responsive Design (Example - adjust breakpoints as needed) */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 20px;
+    }
+
+    .nav-menu ul {
+        gap: 10px;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5em;
+    }
+
+    .hero-content p {
+        font-size: 1em;
+    }
+
+    .call-to-action {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-menu {
+        margin-top: 10px;
+    }
+
+    .hero-content h1 {
+        font-size: 2em;
+    }
+}
+
+.hero-image{
+    width: 100%;
+    height: 100%;
+}
+
+.container {
+    align-items: center;
+    width: 100%;
+    /* max-width: 900px; Adjust max-width as per your design */
+    padding: 20px;
+}
+
+
+.service-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between service items */
+}
+
+.service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Lighter lines between services */
+}
+
+.service-item:last-child {
+    border-bottom: none; /* No border for the last item */
+}
+
+.service-left {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Space between image and text */
+}
+
+.service-left img {
+    width: 80px; /* Adjust image size */
+    height: 80px;
+    border-radius: 50%; /* Makes image circular */
+    object-fit: cover; /* Ensures image covers the area */
+}
+
+.service-details h2 {
+    font-size: 1.5em; /* Adjust as needed */
+    margin: 0;
+    color: white;
+}
+
+.service-right {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Space between price and button */
+}
+
+.price {
+    font-size: 1.3em; /* Adjust as needed */
+    font-weight: bold;
+    color: white;
+}
+
+.reserve-button, .view-course-button {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.reserve-button:hover, .view-course-button:hover {
+    background-color: #eee; /* Lighter white on hover */
+}
+
+/* Optional: Add media queries for responsiveness */
+@media (max-width: 768px) {
+    .service-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .service-right {
+        margin-top: 15px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.5em;
+    }
+
+    .service-left img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .service-details h2 {
+        font-size: 1.2em;
+    }
+
+    .price {
+        font-size: 1.1em;
+    }
+
+    .reserve-button, .view-course-button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+}
+
+.about-us-section {
+    display: flex; /* Use flexbox for a side-by-side layout */
+    min-height: 100vh; /* Make section take full viewport height */
+    overflow: hidden; /* Hide any overflow from the image */
+}
+
+.about-us-content {
+    flex: 0 0 40%; /* Left column takes about 40% of the width, adjust as needed */
+    background-color: #000; /* Black background for the text section */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertically center content */
+    padding: 50px; /* Adjust padding as needed */
+    box-sizing: border-box; /* Include padding in element's total width */
+    color: white; /* Text color */
+}
+
+.about-us-content h1 {
+    font-size: 3em; /* Adjust font size */
+    margin-bottom: 20px;
+    color: white;
+}
+
+.about-us-content p {
+    font-size: 1.1em; /* Adjust font size */
+    line-height: 1.6;
+    margin-bottom: 30px;
+    color: #bbb; /* Slightly lighter white for body text */
+}
+
+.contact-button {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    align-self: flex-start; /* Align button to the left */
+    transition: background-color 0.3s ease;
+}
+
+.contact-button:hover {
+    background-color: #eee;
+}
+
+.about-us-image {
+    flex: 1; /* Right column takes the remaining space */
+    background-color: #333; /* Placeholder background in case image doesn't load */
+    display: flex; /* To center the image if it's smaller than its container */
+    justify-content: center;
+    align-items: center;
+}
+
+.about-us-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the entire container without distortion */
+    display: block; /* Remove extra space below image */
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 992px) {
+    .about-us-section {
+        flex-direction: column; /* Stack columns on smaller screens */
+    }
+
+    .about-us-content {
+        flex: auto; /* Allow content to take natural height */
+        padding: 40px;
+        text-align: center; /* Center text on smaller screens */
+    }
+
+    .about-us-content h1,
+    .about-us-content p,
+    .contact-button {
+        align-self: center; /* Center these elements */
+    }
+
+    .about-us-image {
+        height: 400px; /* Give image a fixed height on smaller screens */
+        flex: auto; /* Allow image to take natural height */
+    }
+}
+
+@media (max-width: 576px) {
+    .about-us-content {
+        padding: 30px;
+    }
+
+    .about-us-content h1 {
+        font-size: 2.5em;
+    }
+
+    .about-us-content p {
+        font-size: 1em;
+    }
+
+    .contact-button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+
+    .about-us-image {
+        height: 300px;
+    }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer {
+  background-color: black;
+  padding: 80px 0;
+  margin-top: 10rem;
+}
+
+.footer_row {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.footer_links {
+  width: 20%;
+  padding: 0 15px;
+}
+
+.footer_links h4 {
+  font-size: 20px;
+  color: white;
+  margin-bottom: 25px;
+  font-weight: 500;
+  padding-bottom: 10px;
+}
+
+.footer_links ul li a {
+  font-size: 18px;
+  text-decoration: none;
+  color: rgb(204, 200, 200);
+  display: block;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.footer_links ul li a:hover {
+  color: #333;
+  padding-left: 6px;
+}
+
+
+.hero-image > img{
+    width: 100%;
+    height: 100%;
+}
+
+.social_links a {
+  display: inline-block;
+  min-height: 40px;
+  width: 40px;
+  background-color: rgb(204, 200, 200);
+  text-align: center;
+  line-height: 40px;
+  border-radius: 50%;
+  color: white;
+  transition: all 0.5s ease;
+}
+
+.social_links a:hover {
+  background-color: #333;
+}
+
+@media (max-width: 991px) {
+  .footer_row {
+    text-align: center;
+  }
+
+  .footer_links {
+    width: 100%;
+    margin-bottom: 30px;
+  }
+}
+
+.social_links a:hover {
+    background-color: #333; /* Darker background for the button */
+}
+
+@media (max-width: 991px) {
+  .footer_row {
+    text-align: center;
+  }
+
+  .footer_links {
+    width: 100%;
+    margin-bottom: 30px;
+  }
+}
+
+.setup_creation_container {
+  display: flex; /* Make it a flex container */
+  justify-content: space-between; /* Pushes the first item (h1) to the left and the second item (creation_div) to the right */
+  align-items: center; /* Vertically centers the items if they have different heights */
+  width: 95%; /* Ensure it spans the full width to allow space-between to work */
+  box-sizing: border-box; /* Include padding in the width calculation */
+}
+
+.setup_creation_container h1 {
+  margin: 0;
+}
+
+.text_center {
+  text-align: center;
+}
+
+.text_end {
+  text-align: end;
+}
+
+.div_center{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.div_container_information{
+  width: 40%;
+  margin-top: 2em;
+}
+
+
+.setup_separete_button > a{
+  margin: 1em;
+}
+
+
+nav {
+  background: #000;
+  padding: 1rem 2rem;
+  color: black;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logo > img {
+  margin-top: 1.2rem;
+  width: 70px;
+  height: 100%;
+}
+
+/* Hamburger */
+#toggle {
+  display: none;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.hamburger span {
+  height: 3px;
+  width: 25px;
+  border-radius: 3px;
+  background: #000;
+}
+
+/* Menu */
+.menu {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hamburger svg {
+  /* The size of the SVG defines the overall size */
+  height: 3em;
+  /* Define the transition for transforming the SVG */
+  transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line {
+  fill: none;
+  stroke: white;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  /* Define the transition for transforming the Stroke */
+  transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+    stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line-top-bottom {
+  stroke-dasharray: 12 63;
+}
+
+#toggle:checked + .hamburger svg {
+  transform: rotate(-45deg);
+}
+
+#toggle:checked + .hamburger svg .line-top-bottom {
+  stroke-dasharray: 20 300;
+  stroke-dashoffset: -32.42;
+}
+
+.menu li {
+  position: relative;
+  z-index: 50;
+}
+
+.menu li a {
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem;
+  transition: 0.3s;
+  color: white;
+}
+
+.menu li a:hover {
+  color: gray;
+}
+
+/* Dropdown */
+.menu li ul {
+  /* margin: 10px 0; */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: none;
+  list-style: none;
+  padding: 0.5rem 0;
+  border-radius: 6px;
+  min-width: 160px;
+}
+
+.menu li:hover ul {
+  display: block;
+}
+
+.menu li ul li a {
+  padding: 0.6rem 1rem;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .menu {
+    width: 100%;
+    flex-direction: column;
+    max-height: 0;
+    overflow: hidden;
+    color: #000;
+  }
+
+  .menu li {
+    width: 100%;
+  }
+
+  .menu li ul {
+    position: static;
+    box-shadow: none;
+  }
+
+  #toggle:checked + .hamburger + .menu {
+    max-height: 1000px;
+    margin-top: 2rem;
+  }
+}

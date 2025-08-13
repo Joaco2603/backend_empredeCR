@@ -103,6 +103,36 @@ router.get('/active', async (req, res) => {
 });
 
 
+router.get("/active", async (req, res) => {
+  try {
+    // 1. Get only active entrepreneurships
+    const report = await Entrepreneurship.find({
+      isActive: true,
+    }).populate("user");
+
+    res.json(report);
+    return;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
+router.post('/activate/:id', async (req, res) => {
+  try {
+    // 1. Get only active entrepreneurships
+    const entrepreneurships = await Reports.findByIdAndUpdate(req.params.id,{
+      isActive: req.body.accepted,
+    });
+
+    res.redirect('http://localhost:8080/entrepreneur')
+    return;
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
 router.get('/my_reports', async (req, res) => {
   try {
     console.log(req.session.user.id)
@@ -131,20 +161,15 @@ router.get('/my_reports', async (req, res) => {
 });
 
 // Ruta para obtener un reporte específico
-router.get('/:id', async (req, res) => {
+router.get("/inactive", async (req, res) => {
   try {
-    const report = await Reports.findById(req.params.id).populate('user');
-    
-    if (!report) {
-      return handleError(res, new Error('Reporte no encontrado'), 404);
-    }
-    
-    res.json({
-      success: true,
-      data: report
-    });
+    // 1. Get all entrepreneurships
+    const report = await Reports.find({ isActive: false }).populate("user");
+
+    // 2. Render entrepreneurships page
+    res.json(report);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 });
 

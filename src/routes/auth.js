@@ -27,13 +27,17 @@ router.post('/login', async (req, res) => {
         error: 'Invalid credentials email or password incorrect',
       });
     }
+    console.log(user)
 
     // 2. Establecer sesión
     req.session.user = {
       id: user.id,
       email: user.email,
-      rol: user.rol,
-      name: user.name
+      last_name: user.last_name,
+      phone: user.phone,
+      birthdate: user.birthdate,
+      rol: user.rol || "CITIZEN_ROLE",
+      name: user.name,
     };
 
     // Construir la URL completa (puedes cambiar localhost:8080 por tu dominio real)
@@ -77,6 +81,9 @@ router.post('/signup', async (req, res) => {
     req.session.user = {
       id: user.id,
       email: user.email,
+      last_name: user.last_name,
+      phone: user.phone,
+      birthdate: user.birthdate,
       rol: user.rol || "CITIZEN_ROLE",
       name: user.name,
     };
@@ -128,19 +135,19 @@ router.get('/session', (req, res) => {
 
     // Actualizar último acceso (opcional)
     req.session.lastAccess = new Date();
-
+    
     // Devolver datos de la sesión (sin información sensible como contraseñas)
     const sessionData = {
       success: true,
       authenticated: true,
       user: {
         id: req.session.user.id,
-        name: req.session.user.name || req.session.user.nombre,
-        last_name: req.session.user.last_name || req.session.user.apellido,
-        phone: req.session.user.phone || req.session.user.telefono,
-        birthdate: req.session.user.birthdate || req.session.user.fecha_nacimiento,
-        email: req.session.user.email || req.session.user.correo,
-        rol: req.session.user.rol || req.session.user.role,
+        name: req.session.user.name,
+        last_name: req.session.user.last_name,
+        phone: req.session.user.phone,
+        birthdate: req.session.user.birthdate,
+        email: req.session.user.email,
+        rol: req.session.user.rol,
         // Agregar otros campos que necesites, excluyendo datos sensibles
         estado: req.session.user.estado,
         img: req.session.user.img
