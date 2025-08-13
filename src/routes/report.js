@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
 });
 
 // Ruta para actualizar reportes - Versión consolidada
-router.put('/:id', async (req, res) => {
+router.post('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updates = {
@@ -54,11 +54,7 @@ router.put('/:id', async (req, res) => {
       return handleError(res, new Error('Reporte no encontrado'), 404);
     }
 
-    res.json({
-      success: true,
-      data: report,
-      message: 'Reporte actualizado exitosamente'
-    });
+    res.redirect('http://localhost:8080/complaint');
 
   } catch (error) {
     console.log(error);
@@ -149,6 +145,22 @@ router.get('/:id', async (req, res) => {
     });
   } catch (error) {
     console.log(error)
+  }
+});
+
+// Ruta para editar (CON transport)
+router.get('/update/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const report = await Reports.findById(id);
+
+    if (!report) {
+      return res.status(404).send('Transporte no encontrado');
+    }
+    res.render('complaintForm', { report });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error del servidor');
   }
 });
 

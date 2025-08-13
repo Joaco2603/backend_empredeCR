@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (rol === 'ADMIN_ROLE') {
                 import('./changeCardsAdmin.js').then(module => {
                     if (typeof module.renderAdminButtons === 'function') {
-                        module.renderAdminButtons('.card', '/api/report', '/api/complaintForm');
+                        module.renderAdminButtons('.card', '/api/report', '/api/report/update/');
                     } else if (typeof window.renderAdminButtons === 'function') {
                         window.renderAdminButtons();
                     }

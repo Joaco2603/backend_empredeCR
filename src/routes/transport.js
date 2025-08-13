@@ -36,7 +36,7 @@ router.post('/:id', async (req, res) => {
       schedules: req.body.schedules !== undefined ? req.body.schedules : null,
       address: req.body.address !== undefined ? req.body.address : null,
       price: req.body.price !== undefined ? req.body.price : null,
-      isActive: req.body.hasOwnProperty('isActive') ? true : false
+      isActive: true
     };
 
     const transport = await Transport.findByIdAndUpdate(id, updateData, { new: true });
@@ -89,7 +89,7 @@ router.delete('/:id', async (req, res) => {
 // Obtener solo transportes activos
 router.get('/active', async (req, res) => {
   try {
-    const transports = await Transport.find({ isActive: true });
+    const transports = await Transport.find({isActive: true});
 
 
     res.json(transports);
